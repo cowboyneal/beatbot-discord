@@ -11,7 +11,6 @@ class Beatbot(discord.Client):
         self.client_list = {}
         self.mpd         = MPDClient()
         self.mpd_monitor = MPDClient()
-        self.status_run  = False
 
         logging.basicConfig(filename=os.path.join(config.LOG_DIR,
                 'beatbot_discord.log'), level=logging.INFO,
@@ -19,21 +18,19 @@ class Beatbot(discord.Client):
 
         discord.Client.__init__(self)
 
+        self.bg_task = self.loop.create_task(self.__status_updater())
+
     async def on_ready(self):
         Beatbot.log_to_file('Logged on as {0}!'.format(self.user))
 
-        if not self.status_run:
-            self.status_run = True
-            await self.__status_updater()
-
     async def __status_updater(self):
+        await self.wait_until_ready()
         self.mpd_monitor.connect(config.MPD_ADDRESS, config.MPD_PORT)
 
-        while True:
+        while not self.is_closed():
             current_song = self.mpd_monitor.currentsong()
             now_playing = discord.Game(current_song['title'] + ' - ' +
                     current_song['artist'])
-
             await self.change_presence(activity=now_playing)
 
             self.mpd_monitor.idle('player')
