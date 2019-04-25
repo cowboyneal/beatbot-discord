@@ -4,9 +4,12 @@ import discord
 import logging
 import config
 
+from musicpd import MPDClient
+
 class Beatbot(discord.Client):
     def __init__(self):
         self.client_list = {}
+        self.mpd = MPDClient()
 
         logging.basicConfig(filename=os.path.join(config.LOG_DIR,
                 'beatbot_discord.log'), level=logging.INFO,
@@ -32,6 +35,8 @@ class Beatbot(discord.Client):
             await self.__start_stream(message)
         elif command == 'stop' or command == 'end':
             await self.__stop_stream(message)
+        elif command == 'status' or command == 'np':
+            await self.__send_status(message)
 
     async def __start_stream(self, message):
         # get channel of caller
@@ -73,6 +78,17 @@ class Beatbot(discord.Client):
         del self.client_list[voice_channel.guild.id]
         Beatbot.log_to_file('Stream stopped on ' + voice_channel.name +
                 ' on ' + voice_channel.guild.name + '.')
+
+    async def __send_status(self, message)
+        self.mpd.connect(config.MPD_ADDRESS, config.MPD_PORT)
+
+        current_song = self.mpd.currentsong()
+
+        self.mpd.close()
+        self.mpd.disconnect()
+
+        await message.channel.send(current_song['title'] + ' - ' +
+                current_song['artist'])
 
     def log_to_file(message):
         logging.info(str(message))
