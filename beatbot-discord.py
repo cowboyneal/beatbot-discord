@@ -9,7 +9,9 @@ from musicpd import MPDClient
 class Beatbot(discord.Client):
     def __init__(self):
         self.client_list = {}
-        self.mpd = MPDClient()
+        self.mpd         = MPDClient()
+        self.mpd_monitor = MPDClient()
+        self.status_run  = False
 
         logging.basicConfig(filename=os.path.join(config.LOG_DIR,
                 'beatbot_discord.log'), level=logging.INFO,
@@ -19,6 +21,22 @@ class Beatbot(discord.Client):
 
     async def on_ready(self):
         Beatbot.log_to_file('Logged on as {0}!'.format(self.user))
+
+        if not self.status_run:
+            self.status_run = True
+            await self.__status_updater()
+
+    async def __status_updater(self):
+        self.mpd_monitor.connect(config.MPD_ADDRESS, config.MPD_PORT)
+
+        while True:
+            current_song = self.mpd_monitor.currentsong()
+            now_playing = discord.Game(current_song['title'] + ' - ' +
+                    current_song['artist'])
+
+            await self.change_presence(activity=now_playing)
+
+            self.mpd_monitor.idle('player')
 
     async def on_message(self, message):
         if message.author == self.user:
