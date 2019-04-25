@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import discord
+import asyncio
 import logging
 import config
 
@@ -32,8 +33,7 @@ class Beatbot(discord.Client):
             now_playing = discord.Game(current_song['title'] + ' - ' +
                     current_song['artist'])
             await self.change_presence(activity=now_playing)
-
-            self.mpd_monitor.idle('player')
+            await asyncio.sleep(5)
 
     async def on_message(self, message):
         if message.author == self.user:
