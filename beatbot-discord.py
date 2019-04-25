@@ -35,7 +35,7 @@ class Beatbot(discord.Client):
         voice_channel = message.author.voice.channel
 
         if (voice_channel is None or self.user in voice_channel.members or
-                voice_channel.Guild.id in self.client_list)
+                voice_channel.guild.id in self.client_list):
             return
 
         # join channel
@@ -45,7 +45,7 @@ class Beatbot(discord.Client):
         stream = discord.FFmpegPCMAudio(config.STREAM_URL)
         voice_client.play(stream)
 
-        self.client_list[voice_channel.Guild.id] = voice_client
+        self.client_list[voice_channel.guild.id] = voice_client
         print('Stream started')
 
     async def __stop_stream(self, message):
@@ -57,13 +57,13 @@ class Beatbot(discord.Client):
         if voice_channel is None or self.user not in voice_channel.members:
             return
 
-        if self.client_list[voice_channel.Guild.id] is not None:
+        if self.client_list[voice_channel.guild.id] is not None:
             # stop streaming
-            self.client_list[voice_channel.Guild.id].stop()
+            self.client_list[voice_channel.guild.id].stop()
 
             # leave channel
-            await self.client_list[voice_channel.Guild.id].disconnect()
-            del self.client_list[voice_channel.Guild.id]
+            await self.client_list[voice_channel.guild.id].disconnect()
+            del self.client_list[voice_channel.guild.id]
             print('Stream stopped')
 
 discord.opus.load_opus('libopus.so')
