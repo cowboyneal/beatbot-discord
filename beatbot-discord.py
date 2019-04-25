@@ -26,13 +26,18 @@ class Beatbot(discord.Client):
 
     async def __status_updater(self):
         await self.wait_until_ready()
+        old_np = None
         self.mpd_monitor.connect(config.MPD_ADDRESS, config.MPD_PORT)
 
         while not self.is_closed():
             current_song = self.mpd_monitor.currentsong()
             now_playing = discord.Game(current_song['title'] + ' - ' +
                     current_song['artist'])
-            await self.change_presence(activity=now_playing)
+
+            if now_playing != old_np:
+                await self.change_presence(activity=now_playing)
+                old_np = now_playing
+
             await asyncio.sleep(5)
 
     async def on_message(self, message):
