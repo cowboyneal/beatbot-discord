@@ -3,7 +3,7 @@ import config
 
 class Beatbot(discord.Client):
     def __init__(self):
-        self.__streaming = False
+        self.client_list = {}
         discord.Client.__init__(self)
 
     async def on_ready(self):
@@ -22,41 +22,53 @@ class Beatbot(discord.Client):
     async def __parse_command(self, message):
         command = message.content.split()[1]
 
-        if command == 'start':
+        if command == 'start' or command == 'play':
             await self.__start_stream(message)
-        elif command == 'stop':
-            await self.__stop_stream()
+        elif command == 'stop' or command == 'end':
+            await self.__stop_stream(message)
 
     async def __start_stream(self, message):
-        if not self.__streaming:
-            # get channel of caller
-            channel = message.author.voice.channel
+        # get channel of caller
+        if not hasattr(message.author, 'voice'):
+            return
 
-            if channel is None:
-                return
+        voice_channel = message.author.voice.channel
 
-            # join channel
-            self.__voice_client = await channel.connect()
+        if voice_channel is None:
+            return
 
-            # start streaming
-            self.__stream = discord.FFmpegPCMAudio(config.STREAM_URL)
-            self.__voice_client.play(self.__stream)
+        if self.user in voice_channel.members:
+            return
 
-            print('Stream started')
-            self.__streaming = True
+        # join channel
+        voice_client = await voice_channel.connect()
 
-    async def __stop_stream(self):
-        if self.__streaming:
-            if self.__voice_client is not None:
-                # stop streaming
-                self.__voice_client.stop()
-                self.__stream.cleanup()
+        # start streaming
+        stream = discord.FFmpegPCMAudio(config.STREAM_URL)
+        voice_client.play(stream)
 
-                # leave channel
-                await self.__voice_client.disconnect()
+        self.client_list[voice_channel.id] = voice_client
+
+        print('Stream started')
+
+    async def __stop_stream(self, message):
+        voice_channel = message.author.voice.channel
+
+        if voice_channel is None:
+            return
+
+        if self.user not in voice_channel.members:
+            return
+
+        if self.client_list[voice_channel.id] is not None:
+            # stop streaming
+            self.client_list[voice_channel.id].stop()
+
+            # leave channel
+            await self.client_list[voice_channel.id].disconnect()
+            del self.client_list[voice_channel.id]
 
             print('Stream stopped')
-            self.__streaming = False
 
 discord.opus.load_opus('libopus.so')
 beatbot = Beatbot()
