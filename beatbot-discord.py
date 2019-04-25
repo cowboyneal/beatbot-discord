@@ -79,7 +79,7 @@ class Beatbot(discord.Client):
         Beatbot.log_to_file('Stream stopped on ' + voice_channel.name +
                 ' on ' + voice_channel.guild.name + '.')
 
-    async def __send_status(self, message)
+    async def __send_status(self, message):
         self.mpd.connect(config.MPD_ADDRESS, config.MPD_PORT)
 
         current_song = self.mpd.currentsong()
