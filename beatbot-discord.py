@@ -1,4 +1,7 @@
+#!/usr/bin/python3
+import os
 import discord
+import logging
 import config
 
 class Beatbot(discord.Client):
@@ -7,13 +10,12 @@ class Beatbot(discord.Client):
         discord.Client.__init__(self)
 
     async def on_ready(self):
-        print('Logged on as {0}!'.format(self.user))
+        Beatbot.log_to_file('beatbot_discord',
+                'Logged on as {0}!'.format(self.user))
 
     async def on_message(self, message):
         if message.author == self.user:
             return
-
-        print('Message from {0.author}: {0.content}'.format(message))
 
         if (message.content.startswith('bb') or
                 message.content.startswith('beatbot')):
@@ -45,7 +47,9 @@ class Beatbot(discord.Client):
         voice_client.play(discord.FFmpegPCMAudio(config.STREAM_URL))
 
         self.client_list[voice_channel.guild.id] = voice_client
-        print('Stream started')
+        Beatbot.log_to_file('beatbot_discord', 'Stream started on ' +
+                voice_channel.name + ' on ' + voice_channel.guild.name
+                + '.')
 
     async def __stop_stream(self, message):
         if not hasattr(message.author, 'voice'):
@@ -64,7 +68,18 @@ class Beatbot(discord.Client):
         await self.client_list[voice_channel.guild.id].disconnect()
 
         del self.client_list[voice_channel.guild.id]
-        print('Stream stopped')
+        Beatbot.log_to_file('beatbot_discord', 'Stream stopped on ' +
+                voice_channel.name + ' on ' + voice_channel.guild.name
+                + '.')
+
+    def log_to_file(file_name, message):
+        fmt_str = '%(asctime)s - %(message)s'
+        file_path = os.path.join(config.LOG_DIR, file_name + '.log')
+
+        logging.basicConfig(filename=file_path, level=logging.INFO,
+                format=fmt_str)
+
+        logging.info(str(message))
 
 discord.opus.load_opus('libopus.so')
 beatbot = Beatbot()
