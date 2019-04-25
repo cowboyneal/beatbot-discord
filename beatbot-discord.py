@@ -7,11 +7,15 @@ import config
 class Beatbot(discord.Client):
     def __init__(self):
         self.client_list = {}
+
+        logging.basicConfig(filename=os.path.join(config.LOG_DIR,
+                'beatbot_discord.log'), level=logging.INFO,
+                format='%(asctime)s - %(message)s')
+
         discord.Client.__init__(self)
 
     async def on_ready(self):
-        Beatbot.log_to_file('beatbot_discord',
-                'Logged on as {0}!'.format(self.user))
+        Beatbot.log_to_file('Logged on as {0}!'.format(self.user))
 
     async def on_message(self, message):
         if message.author == self.user:
@@ -47,9 +51,8 @@ class Beatbot(discord.Client):
         voice_client.play(discord.FFmpegPCMAudio(config.STREAM_URL))
 
         self.client_list[voice_channel.guild.id] = voice_client
-        Beatbot.log_to_file('beatbot_discord', 'Stream started on ' +
-                voice_channel.name + ' on ' + voice_channel.guild.name
-                + '.')
+        Beatbot.log_to_file('Stream started on ' + voice_channel.name +
+                ' on ' + voice_channel.guild.name + '.')
 
     async def __stop_stream(self, message):
         if not hasattr(message.author, 'voice'):
@@ -68,17 +71,10 @@ class Beatbot(discord.Client):
         await self.client_list[voice_channel.guild.id].disconnect()
 
         del self.client_list[voice_channel.guild.id]
-        Beatbot.log_to_file('beatbot_discord', 'Stream stopped on ' +
-                voice_channel.name + ' on ' + voice_channel.guild.name
-                + '.')
+        Beatbot.log_to_file('Stream stopped on ' + voice_channel.name +
+                ' on ' + voice_channel.guild.name + '.')
 
-    def log_to_file(file_name, message):
-        fmt_str = '%(asctime)s - %(message)s'
-        file_path = os.path.join(config.LOG_DIR, file_name + '.log')
-
-        logging.basicConfig(filename=file_path, level=logging.INFO,
-                format=fmt_str)
-
+    def log_to_file(message):
         logging.info(str(message))
 
 discord.opus.load_opus('libopus.so')
