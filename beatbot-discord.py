@@ -45,7 +45,7 @@ class Beatbot(discord.Client):
             return
 
         if (message.content.lower().startswith('bb ') or
-                message.content.lower(),startswith('beatbot ')):
+                message.content.lower().startswith('beatbot ')):
             await self.__parse_command(message)
 
     async def __parse_command(self, message):
