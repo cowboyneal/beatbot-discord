@@ -11,7 +11,7 @@ class Beatbot(discord.Client):
     def __init__(self):
         self.client_list = {}
         self.mpd         = MPDClient()
-        self.mpd_monitor = MPDClient()
+        self.mpd.connect(config.MPD_ADDRESS, config.MPD_PORT)
 
         logging.basicConfig(filename=os.path.join(config.LOG_DIR,
                 'beatbot_discord.log'), level=logging.INFO,
@@ -26,17 +26,15 @@ class Beatbot(discord.Client):
 
     async def __status_updater(self):
         await self.wait_until_ready()
-        old_np = None
-        self.mpd_monitor.connect(config.MPD_ADDRESS, config.MPD_PORT)
+        old_np_str = ''
 
         while not self.is_closed():
-            current_song = self.mpd_monitor.currentsong()
-            now_playing = discord.Game(current_song['title'] + ' - ' +
-                    current_song['artist'])
+            current_song = self.mpd.currentsong()
+            np_str = current_song['title'] + ' - ' + current_song['artist']
 
-            if now_playing != old_np:
-                await self.change_presence(activity=now_playing)
-                old_np = now_playing
+            if np_str != old_np_str:
+                await self.change_presence(activity=discord.Game(np_str))
+                old_np_str = np_str
 
             await asyncio.sleep(10)
 
@@ -101,12 +99,7 @@ class Beatbot(discord.Client):
                 ' on ' + voice_channel.guild.name + '.')
 
     async def __send_status(self, message):
-        self.mpd.connect(config.MPD_ADDRESS, config.MPD_PORT)
-
         current_song = self.mpd.currentsong()
-
-        self.mpd.close()
-        self.mpd.disconnect()
 
         response = discord.Embed(color=discord.Colour.dark_blue(),
                 url=config.EMBED_URL,
