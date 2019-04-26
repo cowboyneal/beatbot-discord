@@ -38,7 +38,7 @@ class Beatbot(discord.Client):
                 await self.change_presence(activity=now_playing)
                 old_np = now_playing
 
-            await asyncio.sleep(5)
+            await asyncio.sleep(10)
 
     async def on_message(self, message):
         if message.author == self.user:
