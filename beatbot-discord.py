@@ -108,10 +108,11 @@ class Beatbot(discord.Client):
         self.mpd.disconnect()
 
         response = discord.Embed(color=discord.Colour.dark_blue(),
+                url=config.EMBED_URL,
                 title=current_song['title'],
                 description=current_song['artist'])
-        thumbnail = config.IMAGE_URL + str(current_song['id'])
-        response.set_thumbnail(url=thumbnail)
+        response.set_thumbnail(url=config.IMAGE_URL +
+                str(current_song['id']))
 
         await message.channel.send(embed=response)
 
