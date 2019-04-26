@@ -44,18 +44,19 @@ class Beatbot(discord.Client):
         if message.author == self.user:
             return
 
-        if (message.content.startswith('bb') or
-                message.content.startswith('beatbot')):
+        if (message.content.lower().startswith('bb ') or
+                message.content.lower(),startswith('beatbot ')):
             await self.__parse_command(message)
 
     async def __parse_command(self, message):
-        command = message.content.split()[1]
+        command = message.content.split()[1].lower()
 
         if command == 'start' or command == 'play':
             await self.__start_stream(message)
         elif command == 'stop' or command == 'end':
             await self.__stop_stream(message)
-        elif command == 'status' or command == 'np':
+        elif (command == 'status' or command == 'np' or
+                command == 'nowplaying' or command == 'now_playing'):
             await self.__send_status(message)
 
     async def __start_stream(self, message):
