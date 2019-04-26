@@ -102,13 +102,13 @@ class Beatbot(discord.Client):
         current_song = self.mpd.currentsong()
 
         response = discord.Embed(color=discord.Colour.dark_blue(),
+                url=config.EMBED_URL,
                 title=current_song['title'],
-                description=current_song['artist'] + "\n**" +
+                description=current_song['artist'] + "\n\n**" +
                 current_song['album'] + '**')
         response.set_thumbnail(url=config.IMAGE_URL +
                 str(current_song['id']))
-        response.set_footer(text='[' + config.FOOTER_URL + '](' +
-                config.EMBED_URL + ')')
+        response.set_footer(text=config.FOOTER_URL)
 
         await message.channel.send(embed=response)
 
