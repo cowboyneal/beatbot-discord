@@ -107,8 +107,12 @@ class Beatbot(discord.Client):
         self.mpd.close()
         self.mpd.disconnect()
 
-        await message.channel.send(current_song['title'] + ' - ' +
-                current_song['artist'])
+        response = discord.Embed(color=discord.Colour.darkblue(),
+                title=current_song['title'],
+                description=current_song['artist'])
+        response.set_thumbnail(config.IMAGE_URL + str(current_song['id']))
+
+        await message.channel.send(embed=response)
 
     def log_to_file(message):
         logging.info(str(message))
