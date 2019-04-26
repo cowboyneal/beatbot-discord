@@ -113,6 +113,7 @@ class Beatbot(discord.Client):
                 description=current_song['artist'])
         response.set_thumbnail(url=config.IMAGE_URL +
                 str(current_song['id']))
+        response.set_footer(text=config.EMBED_URL)
 
         await message.channel.send(embed=response)
 
