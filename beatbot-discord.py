@@ -143,7 +143,12 @@ class Beatbot(discord.Client):
             await message.channel.send(embed=reply)
 
     async def __queue_request(self, message):
-        song_id = int(message.content.split()[2])
+        song_id = message.content.split()[2]
+
+        if song_id.isdigit():
+            song_id = int(song_id)
+        else:
+            return
 
         async with aiohttp.ClientSession() as session:
             response = await session.get(config.SITE_URL + 'queue_request/'
