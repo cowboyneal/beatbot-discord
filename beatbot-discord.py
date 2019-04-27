@@ -135,10 +135,17 @@ class Beatbot(discord.Client):
                     description += '**' + song['id'] + '**: ' + \
                             song['title'] + ' - ' + song['artist'] + "\n"
 
-                reply = discord.Embed(color=discord.Colour.dark_blue(),
-                        url=config.SITE_URL,
-                        title='Search Results',
-                        description=description)
+                if len(description) > 2048:
+                    reply = discord.Embed(color=discord.Colour.dark_blue(),
+                            url=config.SITE_URL,
+                            title='Too Many Results',
+                            description='Too many results to display, ' +
+                                'perhaps try narrowing your search.')
+                else:
+                    reply = discord.Embed(color=discord.Colour.dark_blue(),
+                            url=config.SITE_URL,
+                            title='Search Results',
+                            description=description)
             reply.set_footer(text=config.FOOTER_URL)
             await message.channel.send(embed=reply)
 
