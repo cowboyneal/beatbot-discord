@@ -126,9 +126,8 @@ class Beatbot(discord.Client):
             results = (await response.json())['results']
 
             if len(results) == 0:
-                reply = discord.Embed(color=discord.Colour.dark_blue(),
-                        url=config.SITE_URL,
-                        title='No Results Found')
+                title = 'No Results Found'
+                description = ''
             else:
                 description = ''
                 for song in results:
@@ -136,16 +135,16 @@ class Beatbot(discord.Client):
                             song['title'] + ' - ' + song['artist'] + "\n"
 
                 if len(description) > 2048:
-                    reply = discord.Embed(color=discord.Colour.dark_blue(),
-                            url=config.SITE_URL,
-                            title='Too Many Results',
-                            description='Too many results to display. ' +
-                                'Perhaps try narrowing your search.')
+                    title = 'Too Many Results'
+                    description = 'Too many results to display. ' + \
+                            'Perhaps try narrowing your search.'
                 else:
-                    reply = discord.Embed(color=discord.Colour.dark_blue(),
-                            url=config.SITE_URL,
-                            title='Search Results',
-                            description=description)
+                    title = 'Search Results'
+
+            reply = discord.Embed(color=discord.Colour.dark_blue(),
+                    url=config.SITE_URL,
+                    title=title,
+                    description=description)
             reply.set_footer(text=config.FOOTER_URL)
             await message.channel.send(embed=reply)
 
@@ -166,8 +165,8 @@ class Beatbot(discord.Client):
 
             if receipt['success']:
                 title = 'Request Queued'
-                description = 'Successfully queued ' + receipt['title'] + \
-                        ' - ' + receipt['artist'] + '.'
+                description = 'Successfully queued **' + receipt['title'] \
+                        + '** - **' + receipt['artist'] + '**.'
             else:
                 title = 'Request Failed'
 
