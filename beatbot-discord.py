@@ -2,6 +2,7 @@
 import os
 import discord
 import asyncio
+import aiohttp
 import logging
 import config
 
@@ -10,7 +11,7 @@ from musicpd import MPDClient
 class Beatbot(discord.Client):
     def __init__(self):
         self.client_list = {}
-        self.mpd         = MPDClient()
+        self.mpd = MPDClient()
         self.mpd.connect(config.MPD_ADDRESS, config.MPD_PORT)
 
         logging.basicConfig(filename=os.path.join(config.LOG_DIR,
@@ -56,6 +57,8 @@ class Beatbot(discord.Client):
         elif (command == 'status' or command == 'np' or
                 command == 'nowplaying' or command == 'now_playing'):
             await self.__send_status(message)
+        elif command == 'search' or command == 'find':
+            await self.__search_for_songs(message)
 
     async def __start_stream(self, message):
         # get channel of caller
@@ -101,16 +104,41 @@ class Beatbot(discord.Client):
     async def __send_status(self, message):
         current_song = self.mpd.currentsong()
 
-        response = discord.Embed(color=discord.Colour.dark_blue(),
+        reply = discord.Embed(color=discord.Colour.dark_blue(),
                 url=config.EMBED_URL,
                 title=current_song['title'],
                 description=current_song['artist'] + "\n***" +
-                current_song['album'] + '***')
-        response.set_thumbnail(url=config.IMAGE_URL +
+                    current_song['album'] + '***')
+        reply.set_thumbnail(url=config.IMAGE_URL +
                 str(current_song['id']))
-        response.set_footer(text=config.FOOTER_URL)
+        reply.set_footer(text=config.FOOTER_URL)
 
-        await message.channel.send(embed=response)
+        await message.channel.send(embed=reply)
+
+    async def __search_for_songs(self, message):
+        query = ' '.join(message.content.split()[2:])
+
+        async with aiohttp.ClientSession() as session:
+            response = await session.get(config.EMBED_URL + 'search/' +
+                    query)
+            results = (await response.json())['results']
+
+            if len(results) == 0:
+                reply = discord.Embed(color=discord.Colour.dark_blue(),
+                        url=config.EMBED_URL,
+                        title='No Results Found')
+            else:
+                description = ''
+                for song in results:
+                    description += '**' + song['id'] + '**: ' + \
+                            song['title'] + ' - ' + song['artist'] + "\n"
+
+                reply = discord.Embed(color=discord.Colour.dark_blue(),
+                        url=config.EMBED_URL,
+                        title='Search Results',
+                        description=description)
+            reply.set_footer(text=config.EMBED_URL)
+            await message.channel.send(embed=reply)
 
     def log_to_file(message):
         logging.info(str(message))
