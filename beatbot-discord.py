@@ -59,6 +59,8 @@ class Beatbot(discord.Client):
             await self.__send_status(message)
         elif command == 'search' or command == 'find':
             await self.__search_for_songs(message)
+        elif command == 'queue' or command == 'request':
+            await self.__queue_request(message)
 
     async def __start_stream(self, message):
         # get channel of caller
@@ -105,7 +107,7 @@ class Beatbot(discord.Client):
         current_song = self.mpd.currentsong()
 
         reply = discord.Embed(color=discord.Colour.dark_blue(),
-                url=config.EMBED_URL,
+                url=config.SITE_URL,
                 title=current_song['title'],
                 description=current_song['artist'] + "\n***" +
                     current_song['album'] + '***')
@@ -119,13 +121,13 @@ class Beatbot(discord.Client):
         query = ' '.join(message.content.split()[2:])
 
         async with aiohttp.ClientSession() as session:
-            response = await session.get(config.EMBED_URL + 'search/' +
+            response = await session.get(config.SITE_URL + 'search/' +
                     query)
             results = (await response.json())['results']
 
             if len(results) == 0:
                 reply = discord.Embed(color=discord.Colour.dark_blue(),
-                        url=config.EMBED_URL,
+                        url=config.SITE_URL,
                         title='No Results Found')
             else:
                 description = ''
@@ -134,9 +136,27 @@ class Beatbot(discord.Client):
                             song['title'] + ' - ' + song['artist'] + "\n"
 
                 reply = discord.Embed(color=discord.Colour.dark_blue(),
-                        url=config.EMBED_URL,
+                        url=config.SITE_URL,
                         title='Search Results',
                         description=description)
+            reply.set_footer(text=config.FOOTER_URL)
+            await message.channel.send(embed=reply)
+
+    async def __queue_request(self, message):
+        song_id = int(message.content.split()[2])
+
+        async with aiohttp.ClientSession() as session:
+            response = await session.get(config.SITE_URL + 'queue_request/'
+                    + song_id)
+
+            if (await response.json())['success']:
+                title = 'Request Queued'
+            else:
+                title = 'Request Failed'
+
+            reply = discord.Embed(color=discord.Colour.dark_blue(),
+                    url=config.SITE_URL,
+                    title=title)
             reply.set_footer(text=config.FOOTER_URL)
             await message.channel.send(embed=reply)
 
