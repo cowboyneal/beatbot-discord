@@ -139,8 +139,8 @@ class Beatbot(discord.Client):
                     reply = discord.Embed(color=discord.Colour.dark_blue(),
                             url=config.SITE_URL,
                             title='Too Many Results',
-                            description='Too many results to display, ' +
-                                'perhaps try narrowing your search.')
+                            description='Too many results to display. ' +
+                                'Perhaps try narrowing your search.')
                 else:
                     reply = discord.Embed(color=discord.Colour.dark_blue(),
                             url=config.SITE_URL,
@@ -161,14 +161,19 @@ class Beatbot(discord.Client):
             response = await session.get(config.SITE_URL + 'queue_request/'
                     + str(song_id))
 
-            if (await response.json())['success']:
+            receipt = await response.json()
+
+            if receipt['success']:
                 title = 'Request Queued'
+                description = 'Successfully queued ' + receipt['title'] + \
+                        ' - ' + receipt['artist'] + '.'
             else:
                 title = 'Request Failed'
 
             reply = discord.Embed(color=discord.Colour.dark_blue(),
                     url=config.SITE_URL,
-                    title=title)
+                    title=title,
+                    description=description)
             reply.set_footer(text=config.FOOTER_URL)
             await message.channel.send(embed=reply)
 
