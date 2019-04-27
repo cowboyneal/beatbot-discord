@@ -106,7 +106,7 @@ class Beatbot(discord.Client):
     async def __send_status(self, message):
         current_song = self.mpd.currentsong()
 
-        reply = discord.Embed(color=discord.Colour.dark_blue(),
+        reply = discord.Embed(color=config.EMBED_COLOR,
                 url=config.SITE_URL,
                 title=current_song['title'],
                 description=current_song['artist'] + "\n***" +
@@ -141,7 +141,7 @@ class Beatbot(discord.Client):
                 else:
                     title = 'Search Results'
 
-            reply = discord.Embed(color=discord.Colour.dark_blue(),
+            reply = discord.Embed(color=config.EMBED_COLOR,
                     url=config.SITE_URL,
                     title=title,
                     description=description)
@@ -170,7 +170,7 @@ class Beatbot(discord.Client):
             else:
                 title = 'Request Failed'
 
-            reply = discord.Embed(color=discord.Colour.dark_blue(),
+            reply = discord.Embed(color=config.EMBED_COLOR,
                     url=config.SITE_URL,
                     title=title,
                     description=description)
