@@ -162,6 +162,7 @@ class Beatbot(discord.Client):
                     + str(song_id))
 
             receipt = await response.json()
+            description = ''
 
             if receipt['success']:
                 title = 'Request Queued'
