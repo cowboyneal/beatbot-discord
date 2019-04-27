@@ -137,7 +137,7 @@ class Beatbot(discord.Client):
                         url=config.EMBED_URL,
                         title='Search Results',
                         description=description)
-            reply.set_footer(text=config.EMBED_URL)
+            reply.set_footer(text=config.FOOTER_URL)
             await message.channel.send(embed=reply)
 
     def log_to_file(message):
