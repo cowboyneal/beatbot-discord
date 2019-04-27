@@ -147,7 +147,7 @@ class Beatbot(discord.Client):
 
         async with aiohttp.ClientSession() as session:
             response = await session.get(config.SITE_URL + 'queue_request/'
-                    + song_id)
+                    + str(song_id))
 
             if (await response.json())['success']:
                 title = 'Request Queued'
