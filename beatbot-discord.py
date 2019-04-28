@@ -180,10 +180,7 @@ class Beatbot(discord.Client):
             await message.channel.send(embed=reply)
 
     async def __easter_egg(self, message):
-        reply = discord.Embed()
-        reply.video.url = 'https://www.youtube.com/watch?v=9P-DFZ3HOPQ&t=131s'
-
-        await message.channel.send(embed=reply)
+        await message.channel.send('https://www.youtube.com/watch?v=9P-DFZ3HOPQ&t=131s')
 
     def log_to_file(message):
         logging.info(str(message))
