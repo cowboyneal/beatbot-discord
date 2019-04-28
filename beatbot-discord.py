@@ -61,7 +61,7 @@ class Beatbot(discord.Client):
             await self.__search_for_songs(message)
         elif command == 'queue' or command == 'request':
             await self.__queue_request(message)
-        elif command == 'king':
+        elif command == 'king' or command == 'gun':
             await self.__easter_egg(message)
 
     async def __start_stream(self, message):
@@ -180,7 +180,12 @@ class Beatbot(discord.Client):
             await message.channel.send(embed=reply)
 
     async def __easter_egg(self, message):
-        await message.channel.send('https://www.youtube.com/watch?v=9P-DFZ3HOPQ&t=131s')
+        egg = message.content.split()[1].lower()
+
+        if egg == 'king':
+            await message.channel.send('https://www.youtube.com/watch?v=9P-DFZ3HOPQ&t=131s')
+        elif egg == 'gun':
+            await message.channel.send('https://www.youtube.com/watch?v=-LgEvQuyDxE')
 
     def log_to_file(message):
         logging.info(str(message))
