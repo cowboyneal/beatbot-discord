@@ -61,6 +61,8 @@ class Beatbot(discord.Client):
             await self.__search_for_songs(message)
         elif command == 'queue' or command == 'request':
             await self.__queue_request(message)
+        elif command == 'king':
+            await self.__easter_egg(message)
 
     async def __start_stream(self, message):
         # get channel of caller
@@ -176,6 +178,12 @@ class Beatbot(discord.Client):
                     description=description)
             reply.set_footer(text=config.FOOTER_URL)
             await message.channel.send(embed=reply)
+
+    async def __easter_egg(self, message):
+        reply = discord.Embed()
+        reply.video.url = 'https://www.youtube.com/watch?v=9P-DFZ3HOPQ&t=131s'
+
+        await message.channel.send(embed=reply)
 
     def log_to_file(message):
         logging.info(str(message))
