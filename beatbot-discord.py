@@ -48,7 +48,12 @@ class Beatbot(discord.Client):
             await self.__parse_command(message)
 
     async def __parse_command(self, message):
-        command = message.content.split()[1].lower()
+        args = message.content.split()
+
+        if len(args) < 2:
+            return
+
+        command = args[1].lower()
 
         if command == 'start' or command == 'play':
             await self.__start_stream(message)
@@ -120,7 +125,12 @@ class Beatbot(discord.Client):
         await message.channel.send(embed=reply)
 
     async def __search_for_songs(self, message):
-        query = ' '.join(message.content.split()[2:])
+        args = message.content.split()
+
+        if len(args) < 3:
+            return
+
+        query = ' '.join(args[2:])
 
         async with aiohttp.ClientSession() as session:
             response = await session.get(config.SITE_URL + 'search/' +
@@ -151,7 +161,13 @@ class Beatbot(discord.Client):
             await message.channel.send(embed=reply)
 
     async def __queue_request(self, message):
-        song_id = message.content.split()[2]
+        args = message.content.split()
+
+        if len(args) < 3:
+            await self.__easter_egg(message)
+            return
+
+        song_id = args[2]
 
         if song_id.isdigit():
             song_id = int(song_id)
@@ -186,6 +202,8 @@ class Beatbot(discord.Client):
             await message.channel.send('https://www.youtube.com/watch?v=9P-DFZ3HOPQ')
         elif egg == 'gun':
             await message.channel.send('https://www.youtube.com/watch?v=-LgEvQuyDxE')
+        elif egg == 'queue':
+            await message.channel.send('https://www.youtube.com/watch?v=WPkMUU9tUqk')
 
     def log_to_file(message):
         logging.info(str(message))
