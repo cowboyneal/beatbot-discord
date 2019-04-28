@@ -183,7 +183,7 @@ class Beatbot(discord.Client):
         egg = message.content.split()[1].lower()
 
         if egg == 'king':
-            await message.channel.send('https://www.youtube.com/watch?v=9P-DFZ3HOPQ&t=131s')
+            await message.channel.send('https://www.youtube.com/watch?v=9P-DFZ3HOPQ')
         elif egg == 'gun':
             await message.channel.send('https://www.youtube.com/watch?v=-LgEvQuyDxE')
 
