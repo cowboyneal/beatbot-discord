@@ -199,11 +199,14 @@ class Beatbot(discord.Client):
         egg = message.content.split()[1].lower()
 
         if egg == 'king':
-            await message.channel.send('https://www.youtube.com/watch?v=9P-DFZ3HOPQ')
+            await message.channel.send(
+                    'https://www.youtube.com/watch?v=9P-DFZ3HOPQ')
         elif egg == 'gun':
-            await message.channel.send('https://www.youtube.com/watch?v=-LgEvQuyDxE')
+            await message.channel.send(
+                    'https://www.youtube.com/watch?v=-LgEvQuyDxE')
         elif egg == 'queue':
-            await message.channel.send('https://www.youtube.com/watch?v=WPkMUU9tUqk')
+            await message.channel.send(
+                    'https://www.youtube.com/watch?v=WPkMUU9tUqk')
 
     def log_to_file(message):
         logging.info(str(message))
