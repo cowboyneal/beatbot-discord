@@ -31,7 +31,8 @@ class Beatbot(discord.Client):
 
         while not self.is_closed():
             current_song = self.mpd.currentsong()
-            np_str = current_song['title'] + ' - ' + current_song['artist']
+            np_str = '{} - {}'.format(current_song['title'],
+                    current_song['artist'])
 
             if np_str != old_np_str:
                 await self.change_presence(activity=discord.Game(np_str))
@@ -87,8 +88,8 @@ class Beatbot(discord.Client):
         voice_client.play(discord.FFmpegPCMAudio(config.STREAM_URL))
 
         self.client_list[voice_channel.guild.id] = voice_client
-        Beatbot.log_to_file('Stream started on ' + voice_channel.name +
-                ' on ' + voice_channel.guild.name + '.')
+        Beatbot.log_to_file('Stream started on {} on {}.'.format(
+                voice_channel.name, voice_channel.guild.name))
 
     async def __stop_stream(self, message):
         if not hasattr(message.author, 'voice'):
@@ -107,8 +108,8 @@ class Beatbot(discord.Client):
         await self.client_list[voice_channel.guild.id].disconnect()
 
         del self.client_list[voice_channel.guild.id]
-        Beatbot.log_to_file('Stream stopped on ' + voice_channel.name +
-                ' on ' + voice_channel.guild.name + '.')
+        Beatbot.log_to_file('Stream stopped on {} on {}.'.format(
+                voice_channel.name, voice_channel.guild.name))
 
     async def __send_status(self, message):
         current_song = self.mpd.currentsong()
@@ -116,8 +117,8 @@ class Beatbot(discord.Client):
         reply = discord.Embed(color=config.EMBED_COLOR,
                 url=config.SITE_URL,
                 title=current_song['title'],
-                description=current_song['artist'] + "\n***" +
-                    current_song['album'] + '***')
+                description="{}\n***{}***".format(current_song['artist'],
+                        current_song['album']))
         reply.set_thumbnail(url=config.IMAGE_URL +
                 str(current_song['id']))
         reply.set_footer(text=config.FOOTER_URL)
@@ -133,8 +134,8 @@ class Beatbot(discord.Client):
         query = ' '.join(args[2:])
 
         async with aiohttp.ClientSession() as session:
-            response = await session.get(config.SITE_URL + 'search/' +
-                    query)
+            response = await session.get('{}search/{}'.format(
+                    config.SITE_URL, query))
             results = (await response.json())['results']
 
             if len(results) == 0:
@@ -143,8 +144,8 @@ class Beatbot(discord.Client):
             else:
                 description = ''
                 for song in results:
-                    description += '**' + song['id'] + '**: ' + \
-                            song['title'] + ' - ' + song['artist'] + "\n"
+                    description += "**{}**: {} - {}\n".format(song['id'],
+                            song['title'], song['artist'])
 
                 if len(description) > 2048:
                     title = 'Too Many Results'
@@ -175,16 +176,16 @@ class Beatbot(discord.Client):
             return
 
         async with aiohttp.ClientSession() as session:
-            response = await session.get(config.SITE_URL + 'queue_request/'
-                    + str(song_id))
+            response = await session.get('{}queue_request/{}'.format(
+                    config.SITE_URL, str(song_id)))
 
             receipt = await response.json()
             description = ''
 
             if receipt['success']:
                 title = 'Request Queued'
-                description = 'Successfully queued **' + receipt['title'] \
-                        + '** - **' + receipt['artist'] + '**.'
+                description = 'Successfully queued **{}** - **{}**.'.format(
+                        receipt['title'], receipt['artist'])
             else:
                 title = 'Request Failed'
 
