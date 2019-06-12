@@ -80,8 +80,8 @@ class Beatbot(discord.Client):
                         "channel\n" + \
                 "**status** | **now_playing** | **nowplaying** | **np**: " + \
                         "Show current playing song\n" + \
-                "**search** | **find** <query>: Search for a song to request\n" + \
-                "**queue** | **request** <query>: Queue a song"
+                "**search** | **find** <**query**>: Search for a song to request\n" + \
+                "**queue** | **request** <**id**>: Queue a song"
 
         reply = discord.Embed(color=config.EMBED_COLOR,
                 url=config.SITE_URL,
