@@ -69,6 +69,27 @@ class Beatbot(discord.Client):
             await self.__queue_request(message)
         elif command == 'king' or command == 'gun':
             await self.__easter_egg(message)
+        elif command == 'help':
+            await self.__show_help(message)
+
+    async def __show_help(self, message):
+        usage = "**help**: This message\n" + \
+                "**start** | **play**: Join your voice channel and start " + \
+                        "streaming\n" + \
+                "**stop** | **end**: Stop streaming and leave voice " + \
+                        "channel\n" + \
+                "**status** | **now_playing** | **nowplaying** | **np**: " + \
+                        "Show current playing song\n" + \
+                "**search** | **find** <query>: Search for a song to request" + \
+                "**queue** | **request** <query>: Queue a song"
+
+        reply = discord.Embed(color=config.EMBED_COLOR,
+                url=config.SITE_URL,
+                title='Usage:',
+                description=usage)
+        reply.set_footer(text=config.FOOTER_URL)
+
+        await message.channel.send(embed=reply)
 
     async def __start_stream(self, message):
         # get channel of caller
