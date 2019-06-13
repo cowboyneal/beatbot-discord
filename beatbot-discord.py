@@ -8,15 +8,18 @@ import config
 
 from musicpd import MPDClient
 
+
 class Beatbot(discord.Client):
+
     def __init__(self):
         self.client_list = {}
         self.mpd = MPDClient()
         self.mpd.connect(config.MPD_ADDRESS, config.MPD_PORT)
 
         logging.basicConfig(filename=os.path.join(config.LOG_DIR,
-                'beatbot_discord.log'), level=logging.INFO,
-                format='%(asctime)s - %(message)s')
+                                                  'beatbot_discord.log'),
+                                                  level=logging.INFO,
+                            format='%(asctime)s - %(message)s')
 
         discord.Client.__init__(self)
 
@@ -32,7 +35,7 @@ class Beatbot(discord.Client):
         while not self.is_closed():
             current_song = self.mpd.currentsong()
             np_str = '{} - {}'.format(current_song['title'],
-                    current_song['artist'])
+                                      current_song['artist'])
 
             if np_str != old_np_str:
                 await self.change_presence(activity=discord.Game(np_str))
@@ -75,7 +78,7 @@ class Beatbot(discord.Client):
     async def __show_help(self, message):
         usage = "**help**: This message\n" + \
                 "**start** | **play**: Join your voice channel and start " + \
-                        "streaming\n" + \
+            "streaming\n" + \
                 "**stop** | **end**: Stop streaming and leave voice " + \
                         "channel\n" + \
                 "**status** | **now_playing** | **nowplaying** | **np**: " + \
@@ -84,9 +87,9 @@ class Beatbot(discord.Client):
                 "**queue** | **request** <**id**>: Queue a song"
 
         reply = discord.Embed(color=config.EMBED_COLOR,
-                url=config.SITE_URL,
-                title='Usage:',
-                description=usage)
+                              url=config.SITE_URL,
+                              title='Usage:',
+                              description=usage)
         reply.set_footer(text=config.FOOTER_URL)
 
         await message.channel.send(embed=reply)
@@ -110,7 +113,7 @@ class Beatbot(discord.Client):
 
         self.client_list[voice_channel.guild.id] = voice_client
         Beatbot.log_to_file('Stream started on {} on {}.'.format(
-                voice_channel.name, voice_channel.guild.name))
+            voice_channel.name, voice_channel.guild.name))
 
     async def __stop_stream(self, message):
         if not hasattr(message.author, 'voice'):
@@ -130,18 +133,18 @@ class Beatbot(discord.Client):
 
         del self.client_list[voice_channel.guild.id]
         Beatbot.log_to_file('Stream stopped on {} on {}.'.format(
-                voice_channel.name, voice_channel.guild.name))
+            voice_channel.name, voice_channel.guild.name))
 
     async def __send_status(self, message):
         current_song = self.mpd.currentsong()
 
         reply = discord.Embed(color=config.EMBED_COLOR,
-                url=config.SITE_URL,
-                title=current_song['title'],
-                description="{}\n***{}***".format(current_song['artist'],
-                        current_song['album']))
+                              url=config.SITE_URL,
+                              title=current_song['title'],
+                              description="{}\n***{}***".format(current_song['artist'],
+                                                                current_song['album']))
         reply.set_thumbnail(url=config.IMAGE_URL +
-                str(current_song['id']))
+                            str(current_song['id']))
         reply.set_footer(text=config.FOOTER_URL)
 
         await message.channel.send(embed=reply)
@@ -156,7 +159,7 @@ class Beatbot(discord.Client):
 
         async with aiohttp.ClientSession() as session:
             response = await session.get('{}search/{}'.format(
-                    config.SITE_URL, query))
+                config.SITE_URL, query))
             results = (await response.json())['results']
 
             if len(results) == 0:
@@ -166,19 +169,20 @@ class Beatbot(discord.Client):
                 description = ''
                 for song in results:
                     description += "**{}**: {} - {}\n".format(song['id'],
-                            song['title'], song['artist'])
+                                                              song['title'],
+                                                              song['artist'])
 
                 if len(description) > 2048:
                     title = 'Too Many Results'
                     description = 'Too many results to display. ' + \
-                            'Perhaps try narrowing your search.'
+                        'Perhaps try narrowing your search.'
                 else:
                     title = 'Search Results'
 
             reply = discord.Embed(color=config.EMBED_COLOR,
-                    url=config.SITE_URL,
-                    title=title,
-                    description=description)
+                                  url=config.SITE_URL,
+                                  title=title,
+                                  description=description)
             reply.set_footer(text=config.FOOTER_URL)
             await message.channel.send(embed=reply)
 
@@ -198,7 +202,7 @@ class Beatbot(discord.Client):
 
         async with aiohttp.ClientSession() as session:
             response = await session.get('{}queue_request/{}'.format(
-                    config.SITE_URL, str(song_id)))
+                config.SITE_URL, str(song_id)))
 
             receipt = await response.json()
             description = ''
@@ -206,14 +210,14 @@ class Beatbot(discord.Client):
             if receipt['success']:
                 title = 'Request Queued'
                 description = 'Successfully queued **{}** - **{}**.'.format(
-                        receipt['title'], receipt['artist'])
+                    receipt['title'], receipt['artist'])
             else:
                 title = 'Request Failed'
 
             reply = discord.Embed(color=config.EMBED_COLOR,
-                    url=config.SITE_URL,
-                    title=title,
-                    description=description)
+                                  url=config.SITE_URL,
+                                  title=title,
+                                  description=description)
             reply.set_footer(text=config.FOOTER_URL)
             await message.channel.send(embed=reply)
 
@@ -222,13 +226,13 @@ class Beatbot(discord.Client):
 
         if egg == 'king':
             await message.channel.send(
-                    'https://www.youtube.com/watch?v=9P-DFZ3HOPQ')
+                'https://www.youtube.com/watch?v=9P-DFZ3HOPQ')
         elif egg == 'gun':
             await message.channel.send(
-                    'https://www.youtube.com/watch?v=-LgEvQuyDxE')
+                'https://www.youtube.com/watch?v=-LgEvQuyDxE')
         elif egg == 'queue':
             await message.channel.send(
-                    'https://www.youtube.com/watch?v=WPkMUU9tUqk')
+                'https://www.youtube.com/watch?v=WPkMUU9tUqk')
 
     def log_to_file(message):
         logging.info(str(message))
