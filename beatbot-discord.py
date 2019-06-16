@@ -122,7 +122,7 @@ class Beatbot(discord.Client):
         voice_channel = message.author.voice.channel
 
         if (voice_channel is None or self.user not in voice_channel.members
-                or self.client_list[voice_channel.guild.id] is None):
+                or voice_channel.guild.id not in self.client_list):
             return
 
         # stop streaming
@@ -130,10 +130,27 @@ class Beatbot(discord.Client):
 
         # leave channel
         await self.client_list[voice_channel.guild.id].disconnect()
-
         del self.client_list[voice_channel.guild.id]
         Beatbot.log_to_file('Stream stopped on {} on {}.'.format(
             voice_channel.name, voice_channel.guild.name))
+
+    async def on_voice_state_update(self, member, before, after):
+        if (self.user not in before.channel.members or
+                before.channel == after.channel or
+                before.channel.guild.id not in self.client_list):
+            return
+
+        voice_client = self.client_list[before.channel.guild.id]
+
+        if (len(voice_client.channel.members) != 1 and
+                self.user not in voice_client.channel.members):
+            return
+
+        self.client_list[before.channel.guild.id].stop()
+        await self.client_list[before.channel.guild.id].disconnect()
+        del self.client_list[before.channel.guild.id]
+        Beatbot.log_to_file('Stream stopped on {} on {}.'.format(
+            before.channel.name, before.channel.guild.name))
 
     async def __send_status(self, message):
         current_song = self.mpd.currentsong()
