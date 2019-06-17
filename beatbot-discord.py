@@ -59,21 +59,24 @@ class Beatbot(discord.Client):
 
         command = args[1].lower()
 
-        if command == 'start' or command == 'play':
-            await self.__start_stream(message)
-        elif command == 'stop' or command == 'end':
-            await self.__stop_stream(message)
-        elif (command == 'status' or command == 'np' or
-                command == 'nowplaying' or command == 'now_playing'):
-            await self.__send_status(message)
-        elif command == 'search' or command == 'find':
-            await self.__search_for_songs(message)
-        elif command == 'queue' or command == 'request':
-            await self.__queue_request(message)
-        elif command == 'king' or command == 'gun':
-            await self.__easter_egg(message)
-        elif command == 'help':
-            await self.__show_help(message)
+        route = {'start': self.__start_stream,
+                 'play': self.__start_stream,
+                 'stop': self.__stop_stream,
+                 'end': self.__stop_stream,
+                 'status': self.__send_status,
+                 'np': self.__send_status,
+                 'now_playing': self.__send_status,
+                 'nowplaying': self.__send_status,
+                 'search': self.__search_for_songs,
+                 'find': self.__search_for_songs,
+                 'queue': self.__queue_request,
+                 'request': self.__queue_request,
+                 'help': self.__show_help,
+                 'king': self.__easter_egg,
+                 'gun': self.__easter_egg}
+
+        if command in route:
+            await route[command](message)
 
     async def __show_help(self, message):
         usage = ("**help**: This message\n"
