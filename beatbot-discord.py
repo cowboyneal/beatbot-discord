@@ -140,7 +140,7 @@ class Beatbot(discord.Client):
                 self.user not in voice_client.channel.members):
             return
 
-        await self.__close_voice_client(before,channel)
+        await self.__close_voice_client(before.channel)
 
     async def __close_voice_client(self, channel):
         self.client_list[channel.guild.id].stop()
