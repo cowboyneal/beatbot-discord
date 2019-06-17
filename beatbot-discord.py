@@ -44,9 +44,9 @@ class Beatbot(discord.Client):
             await asyncio.sleep(10)
 
     async def on_message(self, message):
-        if message.author == self.user or
+        if (message.author == self.user or
                 not (message.content.lower().startswith('bb ') or
-                message.content.lower().startswith('beatbot ')):
+                message.content.lower().startswith('beatbot '))):
             return
 
         args = message.content.split()
