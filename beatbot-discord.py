@@ -142,7 +142,7 @@ class Beatbot(discord.Client):
 
         voice_client = self.client_list[before.channel.guild.id]
 
-        if (len(voice_client.channel.members) != 1 and
+        if (len(voice_client.channel.members) != 1 or
                 self.user not in voice_client.channel.members):
             return
 
