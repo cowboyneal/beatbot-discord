@@ -44,14 +44,11 @@ class Beatbot(discord.Client):
             await asyncio.sleep(10)
 
     async def on_message(self, message):
-        if message.author == self.user:
+        if message.author == self.user or
+                not (message.content.lower().startswith('bb ') or
+                message.content.lower().startswith('beatbot ')):
             return
 
-        if (message.content.lower().startswith('bb ') or
-                message.content.lower().startswith('beatbot ')):
-            await self.__parse_command(message)
-
-    async def __parse_command(self, message):
         args = message.content.split()
 
         if len(args) < 2:
