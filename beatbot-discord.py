@@ -76,15 +76,16 @@ class Beatbot(discord.Client):
             await self.__show_help(message)
 
     async def __show_help(self, message):
-        usage = "**help**: This message\n" + \
-                "**start** | **play**: Join your voice channel and start " + \
-            "streaming\n" + \
-                "**stop** | **end**: Stop streaming and leave voice " + \
-                        "channel\n" + \
-                "**status** | **now_playing** | **nowplaying** | **np**: " + \
-                        "Show current playing song\n" + \
-                "**search** | **find** <**query**>: Search for a song to request\n" + \
-                "**queue** | **request** <**id**>: Queue a song"
+        usage = ("**help**: This message\n"
+                 '**start** | **play**: Join your voice channel and start '
+                        "streaming\n"
+                 '**stop** | **end**: Stop streaming and leave voice '
+                        "channel\n"
+                 '**status** | **now_playing** | **nowplaying** | **np**: '
+                        "Show current playing song\n"
+                 '**search** | **find** <**query**>: Search for a song to '
+                        "request\n"
+                 '**queue** | **request** <**id**>: Queue a song')
 
         reply = discord.Embed(color=config.EMBED_COLOR,
                               url=config.SITE_URL,
@@ -125,14 +126,7 @@ class Beatbot(discord.Client):
                 or voice_channel.guild.id not in self.client_list):
             return
 
-        # stop streaming
-        self.client_list[voice_channel.guild.id].stop()
-
-        # leave channel
-        await self.client_list[voice_channel.guild.id].disconnect()
-        del self.client_list[voice_channel.guild.id]
-        Beatbot.log_to_file('Stream stopped on {} on {}.'.format(
-            voice_channel.name, voice_channel.guild.name))
+        await self.__close_voice_client(voice_channel)
 
     async def on_voice_state_update(self, member, before, after):
         if (self.user not in before.channel.members or
@@ -146,11 +140,14 @@ class Beatbot(discord.Client):
                 self.user not in voice_client.channel.members):
             return
 
-        self.client_list[before.channel.guild.id].stop()
-        await self.client_list[before.channel.guild.id].disconnect()
-        del self.client_list[before.channel.guild.id]
+        await self.__close_voice_client(before,channel)
+
+    async def __close_voice_client(self, channel):
+        self.client_list[channel.guild.id].stop()
+        await self.client_list[channel.guild.id].disconnect()
+        del self.client_list[channel.guild.id]
         Beatbot.log_to_file('Stream stopped on {} on {}.'.format(
-            before.channel.name, before.channel.guild.name))
+            channel.name, channel.guild.name))
 
     async def __send_status(self, message):
         current_song = self.mpd.currentsong()
@@ -191,8 +188,8 @@ class Beatbot(discord.Client):
 
                 if len(description) > 2048:
                     title = 'Too Many Results'
-                    description = 'Too many results to display. ' + \
-                        'Perhaps try narrowing your search.'
+                    description = ('Too many results to display. '
+                                   'Perhaps try narrowing your search.')
                 else:
                     title = 'Search Results'
 
