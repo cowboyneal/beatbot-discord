@@ -99,7 +99,6 @@ class Beatbot(discord.Client):
         await message.channel.send(embed=reply)
 
     async def __start_stream(self, message):
-        # get channel of caller
         if not hasattr(message.author, 'voice'):
             return
 
@@ -109,12 +108,8 @@ class Beatbot(discord.Client):
                 voice_channel.guild.id in self.client_list):
             return
 
-        # join channel
         voice_client = await voice_channel.connect()
-
-        # start streaming
         voice_client.play(discord.FFmpegPCMAudio(config.STREAM_URL))
-
         self.client_list[voice_channel.guild.id] = voice_client
         Beatbot.log_to_file('Stream started on {} on {}.'.format(
             voice_channel.name, voice_channel.guild.name))
