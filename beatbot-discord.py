@@ -236,15 +236,12 @@ class Beatbot(discord.Client):
     async def __easter_egg(self, message):
         egg = message.content.split()[1].lower()
 
-        if egg == 'king':
-            await message.channel.send(
-                'https://www.youtube.com/watch?v=9P-DFZ3HOPQ')
-        elif egg == 'gun':
-            await message.channel.send(
-                'https://www.youtube.com/watch?v=-LgEvQuyDxE')
-        elif egg == 'queue':
-            await message.channel.send(
-                'https://www.youtube.com/watch?v=WPkMUU9tUqk')
+        urls = {'king': 'https://www.youtube.com/watch?v=9P-DFZ3HOPQ',
+                'gun': 'https://www.youtube.com/watch?v=-LgEvQuyDxE',
+                'queue': 'https://www.youtube.com/watch?v=WPkMUU9tUqk'}
+
+        if egg in urls:
+            await message.channel.send(urls[egg])
 
     def log_to_file(message):
         logging.info(str(message))
