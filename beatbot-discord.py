@@ -124,7 +124,8 @@ class Beatbot(discord.Client):
         await self.__close_voice_client(voice_channel)
 
     async def on_voice_state_update(self, member, before, after):
-        if (self.user not in before.channel.members or
+        if (before.channel is None or
+                self.user not in before.channel.members or
                 before.channel == after.channel or
                 before.channel.guild.id not in self.client_list):
             return
