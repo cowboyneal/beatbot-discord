@@ -96,7 +96,7 @@ class Beatbot(discord.Client):
         await message.channel.send(embed=reply)
 
     async def __start_stream(self, message):
-        if not hasattr(message.author, 'voice'):
+        if message.author.voice is None:
             return
 
         voice_channel = message.author.voice.channel
@@ -112,7 +112,7 @@ class Beatbot(discord.Client):
             voice_channel.name, voice_channel.guild.name))
 
     async def __stop_stream(self, message):
-        if not hasattr(message.author, 'voice'):
+        if message.author.voice is None:
             return
 
         voice_channel = message.author.voice.channel
