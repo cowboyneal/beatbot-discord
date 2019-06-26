@@ -151,8 +151,9 @@ class Beatbot(discord.Client):
         reply = discord.Embed(color=config.EMBED_COLOR,
                               url=config.SITE_URL,
                               title=current_song['title'],
-                              description="{}\n***{}***".format(current_song['artist'],
-                                                                current_song['album']))
+                              description="{}\n***{}***".format(
+                                  current_song['artist'],
+                                  current_song['album']))
         reply.set_thumbnail(url=config.IMAGE_URL +
                             str(current_song['id']))
         reply.set_footer(text=config.FOOTER_URL)
