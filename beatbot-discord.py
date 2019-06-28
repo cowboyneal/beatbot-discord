@@ -87,13 +87,8 @@ class Beatbot(discord.Client):
                         "request\n"
                  '**queue** | **request** <**id**>: Queue a song')
 
-        reply = discord.Embed(color=config.EMBED_COLOR,
-                              url=config.SITE_URL,
-                              title='Usage:',
-                              description=usage)
-        reply.set_footer(text=config.FOOTER_URL)
-
-        await message.channel.send(embed=reply)
+        await message.channel.send(embed=Beatbot.make_embed(title='Usage:',
+                                                            description=usage))
 
     async def __start_stream(self, message):
         if message.author.voice is None:
@@ -148,16 +143,11 @@ class Beatbot(discord.Client):
     async def __send_status(self, message):
         current_song = self.mpd.currentsong()
 
-        reply = discord.Embed(color=config.EMBED_COLOR,
-                              url=config.SITE_URL,
-                              title=current_song['title'],
-                              description="{}\n***{}***".format(
-                                  current_song['artist'],
-                                  current_song['album']))
-        reply.set_thumbnail(url=config.IMAGE_URL +
-                            str(current_song['id']))
-        reply.set_footer(text=config.FOOTER_URL)
-
+        reply = Beatbot.make_embed(title=current_song['title'],
+                                   description="{}\n***{}***".format(
+                                        current_song['artist'],
+                                        current_song['album']))
+        reply.set_thumbnail(url=config.IMAGE_URL + str(current_song['id']))
         await message.channel.send(embed=reply)
 
     async def __search_for_songs(self, message):
@@ -190,12 +180,8 @@ class Beatbot(discord.Client):
                 else:
                     title = 'Search Results'
 
-            reply = discord.Embed(color=config.EMBED_COLOR,
-                                  url=config.SITE_URL,
-                                  title=title,
-                                  description=description)
-            reply.set_footer(text=config.FOOTER_URL)
-            await message.channel.send(embed=reply)
+            await message.channel.send(embed=Beatbot.make_embed(title=title,
+                                       description=description))
 
     async def __queue_request(self, message):
         args = message.content.split()
@@ -225,12 +211,8 @@ class Beatbot(discord.Client):
             else:
                 title = 'Request Failed'
 
-            reply = discord.Embed(color=config.EMBED_COLOR,
-                                  url=config.SITE_URL,
-                                  title=title,
-                                  description=description)
-            reply.set_footer(text=config.FOOTER_URL)
-            await message.channel.send(embed=reply)
+            await message.channel.send(embed=Beatbot.make_embed(title=title,
+                                       description=description))
 
     async def __easter_egg(self, message):
         egg = message.content.split()[1].lower()
@@ -241,6 +223,17 @@ class Beatbot(discord.Client):
 
         if egg in urls:
             await message.channel.send(urls[egg])
+
+    def make_embed(color=config.EMBED_COLOR,
+                   url=config.SITE_URL,
+                   title='',
+                   description=''):
+        embed = discord.Embed(color=color,
+                              url=url,
+                              title=title,
+                              description=description)
+        embed.set_footer(text=config.FOOTER_URL)
+        return embed
 
     def log_to_file(message):
         logging.info(str(message))
