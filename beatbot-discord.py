@@ -23,7 +23,7 @@ class Beatbot(discord.Client):
 
         discord.Client.__init__(self)
 
-        self.bg_task = self.loop.create_task(self.__status_updater())
+        self.bg_task = self.loop.create_task(self._status_updater())
 
     async def on_ready(self):
         Beatbot.log_to_file('Logged on as {0}!'.format(self.user))
