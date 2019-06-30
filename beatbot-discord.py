@@ -28,7 +28,7 @@ class Beatbot(discord.Client):
     async def on_ready(self):
         Beatbot.log_to_file('Logged on as {0}!'.format(self.user))
 
-    async def __status_updater(self):
+    async def _status_updater(self):
         await self.wait_until_ready()
         old_np_str = ''
 
@@ -56,26 +56,26 @@ class Beatbot(discord.Client):
 
         command = args[1].lower()
 
-        route = {'start': self.__start_stream,
-                 'play': self.__start_stream,
-                 'stop': self.__stop_stream,
-                 'end': self.__stop_stream,
-                 'status': self.__send_status,
-                 'np': self.__send_status,
-                 'now_playing': self.__send_status,
-                 'nowplaying': self.__send_status,
-                 'search': self.__search_for_songs,
-                 'find': self.__search_for_songs,
-                 'queue': self.__queue_request,
-                 'request': self.__queue_request,
-                 'help': self.__show_help,
-                 'king': self.__easter_egg,
-                 'gun': self.__easter_egg}
+        route = {'start': self._start_stream,
+                 'play': self._start_stream,
+                 'stop': self._stop_stream,
+                 'end': self._stop_stream,
+                 'status': self._send_status,
+                 'np': self._send_status,
+                 'now_playing': self._send_status,
+                 'nowplaying': self._send_status,
+                 'search': self._search_for_songs,
+                 'find': self._search_for_songs,
+                 'queue': self._queue_request,
+                 'request': self._queue_request,
+                 'help': self._show_help,
+                 'king': self._easter_egg,
+                 'gun': self._easter_egg}
 
         if command in route:
             await route[command](message)
 
-    async def __show_help(self, message):
+    async def _show_help(self, message):
         usage = ("**help**: This message\n"
                  '**start** | **play**: Join your voice channel and start '
                         "streaming\n"
@@ -90,7 +90,7 @@ class Beatbot(discord.Client):
         await message.channel.send(embed=Beatbot.make_embed(title='Usage:',
                                                             description=usage))
 
-    async def __start_stream(self, message):
+    async def _start_stream(self, message):
         if message.author.voice is None:
             return
 
@@ -106,7 +106,7 @@ class Beatbot(discord.Client):
         Beatbot.log_to_file('Stream started on {} on {}.'.format(
             voice_channel.name, voice_channel.guild.name))
 
-    async def __stop_stream(self, message):
+    async def _stop_stream(self, message):
         if message.author.voice is None:
             return
 
@@ -116,7 +116,7 @@ class Beatbot(discord.Client):
                 or voice_channel.guild.id not in self.client_list):
             return
 
-        await self.__close_voice_client(voice_channel)
+        await self._close_voice_client(voice_channel)
 
     async def on_voice_state_update(self, member, before, after):
         if (before.channel is None or
@@ -131,16 +131,16 @@ class Beatbot(discord.Client):
                 self.user not in voice_client.channel.members):
             return
 
-        await self.__close_voice_client(before.channel)
+        await self._close_voice_client(before.channel)
 
-    async def __close_voice_client(self, channel):
+    async def _close_voice_client(self, channel):
         self.client_list[channel.guild.id].stop()
         await self.client_list[channel.guild.id].disconnect()
         del self.client_list[channel.guild.id]
         Beatbot.log_to_file('Stream stopped on {} on {}.'.format(
             channel.name, channel.guild.name))
 
-    async def __send_status(self, message):
+    async def _send_status(self, message):
         current_song = self.mpd.currentsong()
 
         reply = Beatbot.make_embed(title=current_song['title'],
@@ -150,7 +150,7 @@ class Beatbot(discord.Client):
         reply.set_thumbnail(url=config.IMAGE_URL + str(current_song['id']))
         await message.channel.send(embed=reply)
 
-    async def __search_for_songs(self, message):
+    async def _search_for_songs(self, message):
         args = message.content.split()
 
         if len(args) < 3:
@@ -183,7 +183,7 @@ class Beatbot(discord.Client):
             await message.channel.send(embed=Beatbot.make_embed(title=title,
                                        description=description))
 
-    async def __queue_request(self, message):
+    async def _queue_request(self, message):
         args = message.content.split()
 
         if len(args) < 3:
@@ -214,7 +214,7 @@ class Beatbot(discord.Client):
             await message.channel.send(embed=Beatbot.make_embed(title=title,
                                        description=description))
 
-    async def __easter_egg(self, message):
+    async def _easter_egg(self, message):
         egg = message.content.split()[1].lower()
 
         urls = {'king': 'https://www.youtube.com/watch?v=9P-DFZ3HOPQ',
