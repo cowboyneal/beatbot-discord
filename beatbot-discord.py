@@ -25,7 +25,7 @@ class Beatbot(discord.Client):
 
         logging.basicConfig(filename=os.path.join(config.LOG_DIR,
                                                   'beatbot_discord.log'),
-                                                  level=logging.INFO,
+                            level=logging.INFO,
                             format='%(asctime)s - %(message)s')
 
         discord.Client.__init__(self)
@@ -77,7 +77,6 @@ class Beatbot(discord.Client):
             return
 
         command = args[1].lower()
-
         route = {'start': self._start_stream,
                  'play': self._start_stream,
                  'stop': self._stop_stream,
@@ -213,7 +212,6 @@ class Beatbot(discord.Client):
         """
 
         current_song = self.mpd.currentsong()
-
         reply = Beatbot.make_embed(title=current_song['title'],
                                    description="{}\n***{}***".format(
                                         current_song['artist'],
