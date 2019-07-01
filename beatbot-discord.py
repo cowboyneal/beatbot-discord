@@ -240,12 +240,11 @@ class Beatbot(discord.Client):
             response = await session.get('{}search/{}'.format(
                 config.SITE_URL, query))
             results = (await response.json())['results']
+            description = ''
 
             if len(results) == 0:
                 title = 'No Results Found'
-                description = ''
             else:
-                description = ''
                 for song in results:
                     description += "**{}**: {} - {}\n".format(song['id'],
                                                               song['title'],
