@@ -10,8 +10,15 @@ from musicpd import MPDClient
 
 
 class Beatbot(discord.Client):
+    """
+    This is a Discord gateway for Beatbot.
+    """
 
     def __init__(self):
+        """
+        Constructor for Beatbot
+        """
+
         self.client_list = {}
         self.mpd = MPDClient()
         self.mpd.connect(config.MPD_ADDRESS, config.MPD_PORT)
@@ -26,9 +33,17 @@ class Beatbot(discord.Client):
         self.bg_task = self.loop.create_task(self._status_updater())
 
     async def on_ready(self):
+        """
+        Log to file on successful connection
+        """
+
         Beatbot.log_to_file('Logged on as {0}!'.format(self.user))
 
     async def _status_updater(self):
+        """
+        A background task that will update the "Playing" field in Discord
+        """
+
         await self.wait_until_ready()
         old_np_str = ''
 
@@ -44,6 +59,13 @@ class Beatbot(discord.Client):
             await asyncio.sleep(10)
 
     async def on_message(self, message):
+        """
+        Parse each incoming message and act on it if necessary.
+
+        Parameters:
+            message (discord.Message): The message
+        """
+
         if (message.author == self.user or
                 not (message.content.lower().startswith('bb ') or
                 message.content.lower().startswith('beatbot '))):
@@ -76,6 +98,12 @@ class Beatbot(discord.Client):
             await route[command](message)
 
     async def _show_help(self, message):
+        """
+        Display a help message
+
+        Parameters:
+            message (Discord.message): The message which requested help
+        """
         usage = ("**help**: This message\n"
                  '**start** | **play**: Join your voice channel and start '
                         "streaming\n"
@@ -91,6 +119,14 @@ class Beatbot(discord.Client):
                                                             description=usage))
 
     async def _start_stream(self, message):
+        """
+        Determine if the stream can be started and then do so if able
+
+        Parameters:
+            message (Discord.message): The message which issued the start
+                                       command
+        """
+
         if message.author.voice is None:
             return
 
@@ -107,6 +143,14 @@ class Beatbot(discord.Client):
             voice_channel.name, voice_channel.guild.name))
 
     async def _stop_stream(self, message):
+        """
+        Determine if a stream is playing and if so, stop it
+
+        Parameters:
+            message (Discord.message): The message which issued the stop
+                                       command
+        """
+
         if message.author.voice is None:
             return
 
@@ -119,6 +163,19 @@ class Beatbot(discord.Client):
         await self._close_voice_client(voice_channel)
 
     async def on_voice_state_update(self, member, before, after):
+        """
+        Monitor state updates and act on them if needed
+
+        If the bot is the last user left in its voice channel, then we no
+        longer have any listeners and may as well stop the stream and leave
+        the channel, as if ordered to do so
+
+        Parameters:
+            member (Discord.Member): User who changed voice state
+            before (Discord.VoiceState): State before the change
+            after (Discord.VoiceState): State after the change
+        """
+
         if (before.channel is None or
                 self.user not in before.channel.members or
                 before.channel == after.channel or
@@ -134,6 +191,13 @@ class Beatbot(discord.Client):
         await self._close_voice_client(before.channel)
 
     async def _close_voice_client(self, channel):
+        """
+        Helper function to stop the stream and leave the channel
+
+        Parameters:
+            channel (Discord.VoiceChannel): Channel to leave
+        """
+
         self.client_list[channel.guild.id].stop()
         await self.client_list[channel.guild.id].disconnect()
         del self.client_list[channel.guild.id]
@@ -141,6 +205,13 @@ class Beatbot(discord.Client):
             channel.name, channel.guild.name))
 
     async def _send_status(self, message):
+        """
+        Show the currently playing song
+
+        Parameters:
+            message (Discord.Message): The request for current status
+        """
+
         current_song = self.mpd.currentsong()
 
         reply = Beatbot.make_embed(title=current_song['title'],
@@ -151,6 +222,13 @@ class Beatbot(discord.Client):
         await message.channel.send(embed=reply)
 
     async def _search_for_songs(self, message):
+        """
+        Search for songs to potentially queue
+
+        Parameters:
+            message (Discord.Message): The query to match against the song list
+        """
+
         args = message.content.split()
 
         if len(args) < 3:
@@ -184,6 +262,17 @@ class Beatbot(discord.Client):
                                        description=description))
 
     async def _queue_request(self, message):
+        """
+        Queue a request with Beatbot
+
+        After determining that the song id is actually a digit, attempt to
+        request it from Beatbot, and check the queue receipt to confirm that
+        it did actually queue
+
+        Parameters:
+            message (Discord.Message): The message with the song request
+        """
+
         args = message.content.split()
 
         if len(args) < 3:
@@ -215,6 +304,13 @@ class Beatbot(discord.Client):
                                        description=description))
 
     async def _easter_egg(self, message):
+        """
+        Link a funny video in chat in response to a number of keywords
+
+        Parameters:
+            message (Discord.message): The message which qualified for an egg
+        """
+
         egg = message.content.split()[1].lower()
 
         urls = {'king': 'https://www.youtube.com/watch?v=9P-DFZ3HOPQ',
@@ -228,6 +324,19 @@ class Beatbot(discord.Client):
                    url=config.SITE_URL,
                    title='',
                    description=''):
+        """
+        Create an embed using the parameters provided.
+
+        Parameters:
+            color (Union[Discord.Colour, int]): The color of the embed
+            url (str): The url to link to in the title of the embed
+            title (str): The text to use for the title of the embed
+            description (str): The main body of the embed
+
+        Returns:
+            Discord.Embed: An embed that can be edited or sent on immediately
+        """
+
         embed = discord.Embed(color=color,
                               url=url,
                               title=title,
@@ -236,6 +345,13 @@ class Beatbot(discord.Client):
         return embed
 
     def log_to_file(message):
+        """
+        Helper log function
+
+        Parameters:
+            message (str): What to log to file
+        """
+
         logging.info(str(message))
 
 discord.opus.load_opus('libopus.so')
