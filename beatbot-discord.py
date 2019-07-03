@@ -101,7 +101,7 @@ class Beatbot(discord.Client):
         Display a help message
 
         Parameters:
-            message (Discord.message): The message which requested help
+            message (Discord.Message): The message which requested help
         """
         usage = ("**help**: This message\n"
                  '**start** | **play**: Join your voice channel and start '
@@ -122,7 +122,7 @@ class Beatbot(discord.Client):
         Determine if the stream can be started and then do so if able
 
         Parameters:
-            message (Discord.message): The message which issued the start
+            message (Discord.Message): The message which issued the start
                                        command
         """
 
@@ -146,7 +146,7 @@ class Beatbot(discord.Client):
         Determine if a stream is playing and if so, stop it
 
         Parameters:
-            message (Discord.message): The message which issued the stop
+            message (Discord.Message): The message which issued the stop
                                        command
         """
 
@@ -305,7 +305,7 @@ class Beatbot(discord.Client):
         Link a funny video in chat in response to a number of keywords
 
         Parameters:
-            message (Discord.message): The message which qualified for an egg
+            message (Discord.Message): The message which qualified for an egg
         """
 
         egg = message.content.split()[1].lower()
