@@ -273,7 +273,7 @@ class Beatbot(discord.Client):
         args = message.content.split()
 
         if len(args) < 3:
-            await self.__easter_egg(message)
+            await self._easter_egg(message)
             return
 
         song_id = args[2]
