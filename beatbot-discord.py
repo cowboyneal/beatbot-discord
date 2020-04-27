@@ -136,7 +136,8 @@ class Beatbot(discord.Client):
             return
 
         voice_client = await voice_channel.connect()
-        voice_client.play(discord.FFmpegPCMAudio(config.STREAM_URL))
+        voice_client.play(discord.FFmpegPCMAudio(config.STREAM_URL,
+                options='-muxdelay 0.1'))
         self.client_list[voice_channel.guild.id] = voice_client
         Beatbot.log_to_file('Stream started on {} on {}.'.format(
             voice_channel.name, voice_channel.guild.name))
