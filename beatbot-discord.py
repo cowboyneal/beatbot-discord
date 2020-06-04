@@ -318,6 +318,7 @@ class Beatbot(discord.Client):
         """
         Get the current song from beatbot and return it.
         """
+
         async with aiohttp.ClientSession() as session:
             response = await session.get('{}now_playing'.format(
                 config.SITE_URL))
