@@ -52,7 +52,7 @@ class Beatbot(discord.Client):
                 await self.change_presence(activity=discord.Game(np_str))
                 old_np_str = np_str
 
-            await asyncio.sleep(10)
+            await asyncio.sleep(15)
 
     async def on_message(self, message):
         """
