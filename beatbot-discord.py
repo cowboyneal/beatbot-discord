@@ -6,8 +6,6 @@ import aiohttp
 import logging
 import config
 
-from musicpd import MPDClient
-
 
 class Beatbot(discord.Client):
     """
@@ -20,8 +18,6 @@ class Beatbot(discord.Client):
         """
 
         self.client_list = {}
-        self.mpd = MPDClient()
-        self.mpd.connect(config.MPD_ADDRESS, config.MPD_PORT)
 
         logging.basicConfig(filename=os.path.join(config.LOG_DIR,
                                                   'beatbot_discord.log'),
@@ -48,7 +44,7 @@ class Beatbot(discord.Client):
         old_np_str = ''
 
         while not self.is_closed():
-            current_song = self.mpd.currentsong()
+            current_song = await Beatbot.get_current_song()
             np_str = '{} - {}'.format(current_song['title'],
                                       current_song['artist'])
 
@@ -212,7 +208,7 @@ class Beatbot(discord.Client):
             message (Discord.Message): The request for current status
         """
 
-        current_song = self.mpd.currentsong()
+        current_song = await Beatbot.get_current_song()
         reply = Beatbot.make_embed(title=current_song['title'],
                                    description="{}\n***{}***".format(
                                         current_song['artist'],
@@ -317,6 +313,16 @@ class Beatbot(discord.Client):
 
         if egg in urls:
             await message.channel.send(urls[egg])
+
+    async def get_current_song():
+        """
+        Get the current song from beatbot and return it.
+        """
+        async with aiohttp.ClientSession() as session:
+            response = await session.get('{}now_playing'.format(
+                config.SITE_URL))
+
+            return await response.json()['currentsong']
 
     def make_embed(color=config.EMBED_COLOR,
                    url=config.SITE_URL,
