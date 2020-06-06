@@ -323,8 +323,7 @@ class Beatbot(discord.Client):
             response = await session.get('{}now_playing'.format(
                 config.SITE_URL))
 
-            now_playing = await response.json()
-            return now_playing['currentsong']
+            return (await response.json())['currentsong']
 
     def make_embed(color=config.EMBED_COLOR,
                    url=config.SITE_URL,
