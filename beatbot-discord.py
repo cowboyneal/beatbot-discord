@@ -40,9 +40,10 @@ class Beatbot(discord.Client):
         A background task that will update the "Playing" field in Discord
         """
 
-        while true:
+        while True:
             await self.wait_until_ready()
             old_np_str = ''
+            Beatbot.log_to_file('Status Updater started')
 
             while not self.is_closed():
                 current_song = await Beatbot.get_current_song()
@@ -55,6 +56,7 @@ class Beatbot(discord.Client):
 
                 await asyncio.sleep(15)
 
+            Beatbot.log_to_file('Status Updater stopped')
             await asyncio.sleep(15)
 
     async def on_message(self, message):
