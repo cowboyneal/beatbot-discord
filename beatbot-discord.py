@@ -40,17 +40,20 @@ class Beatbot(discord.Client):
         A background task that will update the "Playing" field in Discord
         """
 
-        await self.wait_until_ready()
-        old_np_str = ''
+        while true:
+            await self.wait_until_ready()
+            old_np_str = ''
 
-        while not self.is_closed():
-            current_song = await Beatbot.get_current_song()
-            np_str = '{} - {}'.format(current_song['title'],
-                                      current_song['artist'])
+            while not self.is_closed():
+                current_song = await Beatbot.get_current_song()
+                np_str = '{} - {}'.format(current_song['title'],
+                                          current_song['artist'])
 
-            if np_str != old_np_str:
-                await self.change_presence(activity=discord.Game(np_str))
-                old_np_str = np_str
+                if np_str != old_np_str:
+                    await self.change_presence(activity=discord.Game(np_str))
+                    old_np_str = np_str
+
+                await asyncio.sleep(15)
 
             await asyncio.sleep(15)
 
