@@ -104,6 +104,7 @@ class Beatbot(discord.Client):
         Parameters:
             message (Discord.Message): The message which requested help
         """
+
         usage = ("**help**: This message\n"
                  '**start** | **play**: Join your voice channel and start '
                         "streaming\n"
