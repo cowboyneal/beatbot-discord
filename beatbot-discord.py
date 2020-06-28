@@ -141,7 +141,7 @@ class Beatbot(discord.Client):
         voice_client.play(discord.FFmpegPCMAudio(config.STREAM_URL,
                 options='-muxdelay 0.1'))
         self.client_list[voice_channel.guild.id] = voice_client
-        Beatbot.log_to_file('Stream started on {} on {}.'.format(
+        Beatbot.log_to_file('Stream started in {} on {}.'.format(
             voice_channel.name, voice_channel.guild.name))
 
     async def _stop_stream(self, message):
@@ -329,7 +329,12 @@ class Beatbot(discord.Client):
             response = await session.get('{}now_playing'.format(
                 config.SITE_URL))
 
-            return (await response.json())['currentsong']
+            if response.status == 200:
+                return (await response.json())['currentsong']
+            else:
+                Beatbot.log_to_file('Could not contact {}'.format(
+                    config.SITE_URL))
+                return None
 
     def make_embed(color=config.EMBED_COLOR,
                    url=config.SITE_URL,
