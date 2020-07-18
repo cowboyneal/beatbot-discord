@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import sys
 import discord
 import asyncio
 import aiohttp
@@ -46,13 +47,18 @@ class Beatbot(discord.Client):
             Beatbot.log_to_file('Status Updater started')
 
             while not self.is_closed():
-                current_song = await Beatbot.get_current_song()
-                np_str = '{} - {}'.format(current_song['title'],
-                                          current_song['artist'])
+                try:
+                    current_song = await Beatbot.get_current_song()
+                    np_str = '{} - {}'.format(current_song['title'],
+                                              current_song['artist'])
 
-                if np_str != old_np_str:
-                    await self.change_presence(activity=discord.Game(np_str))
-                    old_np_str = np_str
+                    if np_str != old_np_str:
+                        await self.change_presence(
+                                activity=discord.Game(np_str))
+                        old_np_str = np_str
+                except:
+                    error = sys.exc_info()[0]
+                    Beatbot.log_to_file(error)
 
                 await asyncio.sleep(15)
 
