@@ -58,7 +58,7 @@ class Beatbot(discord.Client):
                         old_np_str = np_str
                 except:
                     error = sys.exc_info()[0]
-                    Beatbot.log_to_file(error)
+                    Beatbot.log_to_file('EXCEPTION CAUGHT: ' + error)
 
                 await asyncio.sleep(15)
 
