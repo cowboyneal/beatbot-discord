@@ -36,34 +36,45 @@ class Beatbot(discord.Client):
 
         Beatbot.log_to_file('Logged on as {0}!'.format(self.user))
 
+    async def on_resumed(self):
+        """
+        Restart status updater task
+        """
+        self.bg_task.cancel()
+        await self.bg_task
+        self.bg_task = self.loop.create_task(self._status_updater())
+
     async def _status_updater(self):
         """
         A background task that will update the "Playing" field in Discord
         """
 
-        while True:
-            await self.wait_until_ready()
-            old_np_str = ''
-            Beatbot.log_to_file('Status Updater started')
+        try:
+            while True:
+                await self.wait_until_ready()
+                old_np_str = ''
+                Beatbot.log_to_file('Status Updater started')
 
-            while not self.is_closed():
-                try:
-                    current_song = await Beatbot.get_current_song()
-                    np_str = '{} - {}'.format(current_song['title'],
-                                              current_song['artist'])
+                while not self.is_closed():
+                    try:
+                        current_song = await Beatbot.get_current_song()
+                        np_str = '{} - {}'.format(current_song['title'],
+                                                  current_song['artist'])
 
-                    if np_str != old_np_str:
-                        await self.change_presence(
-                                activity=discord.Game(np_str))
-                        old_np_str = np_str
-                except:
-                    error = sys.exc_info()[0]
-                    Beatbot.log_to_file('EXCEPTION CAUGHT: ' + error)
+                        if np_str != old_np_str:
+                            await self.change_presence(
+                                    activity=discord.Game(np_str))
+                            old_np_str = np_str
+                    except:
+                        error = sys.exc_info()[0]
+                        Beatbot.log_to_file('EXCEPTION CAUGHT: ' + error)
 
+                    await asyncio.sleep(15)
+
+                Beatbot.log_to_file('Status Updater stopped')
                 await asyncio.sleep(15)
-
+        except asyncio.CancelledError:
             Beatbot.log_to_file('Status Updater stopped')
-            await asyncio.sleep(15)
 
     async def on_message(self, message):
         """
