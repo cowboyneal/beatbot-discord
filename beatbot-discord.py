@@ -40,6 +40,7 @@ class Beatbot(discord.Client):
         """
         Restart status updater task
         """
+
         self.bg_task.cancel()
         await self.bg_task
         self.bg_task = self.loop.create_task(self._status_updater())
