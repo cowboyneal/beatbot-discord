@@ -68,9 +68,10 @@ class Beatbot(discord.Client):
                             old_np_str = np_str
                     except:
                         error = sys.exc_info()
-                        Beatbot.log_to_file('EXCEPTION CAUGHT: ' + error[0])
-                        Beatbot.log_to_file('VALUE: ' + error[1])
-                        Beatbot.log_to_file('TRACEBACK: ' + error[2])
+                        Beatbot.log_to_file('EXCEPTION CAUGHT: '
+                                + str(error[0]))
+                        Beatbot.log_to_file('VALUE: ' + str(error[1]))
+                        Beatbot.log_to_file('TRACEBACK: ' + str(error[2]))
 
                     await asyncio.sleep(15)
 
