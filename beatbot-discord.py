@@ -29,7 +29,7 @@ class Beatbot(discord.Client):
         intents = discord.Intents.default()
         intents.message_content = True
         discord.Client.__init__(self, intents=intents)
-        tree = app_commands.CommandTree(self)
+        self.tree = app_commands.CommandTree(self)
 
     async def setup_hook(self):
         self.bg_task = self.loop.create_task(self._status_updater())
@@ -126,7 +126,7 @@ class Beatbot(discord.Client):
 
     async def _sync_tree(self, message):
         if (str(message.author) == 'CowboyNeal#0541'):
-            await tree.sync()
+            await self.tree.sync()
             Beatbot.log_to_file('Application commands synced')
 
     async def _show_help(self, message):
