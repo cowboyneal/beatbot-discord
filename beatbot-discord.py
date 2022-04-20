@@ -25,7 +25,7 @@ class Beatbot(discord.Client):
                             level=logging.INFO,
                             format='%(asctime)s - %(message)s')
 
-        discord.Client.__init__(self)
+        discord.Client.__init__(self, intents=discord.Intents.default())
 
         self.bg_task = self.loop.create_task(self._status_updater())
 
@@ -392,5 +392,5 @@ class Beatbot(discord.Client):
         logging.info(str(message))
 
 discord.opus.load_opus('libopus.so')
-beatbot = Beatbot(intents=discord.Intents.default())
+beatbot = Beatbot()
 beatbot.run(config.LOGIN_TOKEN)
