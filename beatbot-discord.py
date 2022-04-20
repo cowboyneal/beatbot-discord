@@ -398,7 +398,6 @@ class Beatbot(discord.Client):
 discord.opus.load_opus('libopus.so')
 beatbot = Beatbot()
 tree = app_commands.CommandTree(beatbot)
-beatbot.run(config.LOGIN_TOKEN)
 
 @tree.command()
 async def start(interaction: discord.Interaction):
@@ -417,3 +416,5 @@ async def status(interaction: discord.Interaction):
     """Show current playing song"""
 
     await beatbot.send_status(interaction.message)
+
+beatbot.run(config.LOGIN_TOKEN)
