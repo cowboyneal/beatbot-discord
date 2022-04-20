@@ -2,6 +2,7 @@
 import os
 import sys
 import discord
+from discord import app_commands
 import asyncio
 import aiohttp
 import logging
