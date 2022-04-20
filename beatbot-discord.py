@@ -31,24 +31,6 @@ class Beatbot(discord.Client):
         discord.Client.__init__(self, intents=intents)
         tree = app_commands.CommandTree(self)
 
-    @tree.command(name="start")
-    async def start(interaction: discord.Interaction):
-        """Join your voice channel and start playing music"""
-
-        await self.start_stream(interaction.message)
-
-    @tree.command(name="stop")
-    async def stop(interaction: discord.Interaction):
-        """Stop playing music and leave your voice channel"""
-
-        await self.stop_stream(interaction.message)
-
-    @tree.command(name="status")
-    async def status(interaction: discord.Interaction):
-        """Show current playing song"""
-
-        await self.send_status(interaction.message)
-
     async def setup_hook(self):
         self.bg_task = self.loop.create_task(self._status_updater())
 
@@ -422,5 +404,23 @@ class Beatbot(discord.Client):
 
 discord.opus.load_opus('libopus.so')
 beatbot = Beatbot()
+
+@beatbot.tree.command(name="start")
+async def start(interaction: discord.Interaction):
+    """Join your voice channel and start playing music"""
+
+    await beatbot.start_stream(interaction.message)
+
+@beatbot.tree.command(name="stop")
+async def stop(interaction: discord.Interaction):
+    """Stop playing music and leave your voice channel"""
+
+    await beatbot.stop_stream(interaction.message)
+
+@beatbot.tree.command(name="status")
+async def status(interaction: discord.Interaction):
+    """Show current playing song"""
+
+    await beatbot.send_status(interaction.message)
 
 beatbot.run(config.LOGIN_TOKEN)
