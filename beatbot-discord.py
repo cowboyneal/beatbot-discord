@@ -114,8 +114,8 @@ class Beatbot(discord.Client):
                  'nowplaying':  self._send_status_onmsg,
                  'search':      self._search_for_songs_onmsg,
                  'find':        self._search_for_songs_onmsg,
-                 'queue':       self._queue_request,
-                 'request':     self._queue_request,
+                 'queue':       self._queue_request_onmsg,
+                 'request':     self._queue_request_onmsg,
                  'help':        self._show_help,
                  'sync_tree':   self._sync_tree,
                  'king':        self._easter_egg,
@@ -280,7 +280,7 @@ class Beatbot(discord.Client):
             return
 
         query = ' '.join(args[2:])
-        reply = await self._search_for_songs(query)
+        reply = await self.search_for_songs(query)
         await message.channel.send(embed=reply)
 
     async def search_for_songs(self, query):
@@ -307,7 +307,7 @@ class Beatbot(discord.Client):
 
             return Beatbot.make_embed(title=title, description=description))
 
-    async def _queue_request(self, message):
+    async def _queue_request_onmsg(self, message):
         """
         Queue a request with Beatbot
 
@@ -332,6 +332,10 @@ class Beatbot(discord.Client):
         else:
             return
 
+        reply = await self.queue_request(song_id)
+        await message.channel.send(embed=reply)
+
+    async def queue_request(self, song_id):
         async with aiohttp.ClientSession() as session:
             response = await session.get('{}queue_request/{}'.format(
                 config.SITE_URL, str(song_id)))
@@ -346,8 +350,7 @@ class Beatbot(discord.Client):
             else:
                 title = 'Request Failed'
 
-            await message.channel.send(embed=Beatbot.make_embed(title=title,
-                                       description=description))
+            return Beatbot.make_embed(title=title, description=description))
 
     async def _easter_egg(self, message):
         """
