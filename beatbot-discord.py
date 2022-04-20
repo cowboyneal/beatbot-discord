@@ -350,7 +350,7 @@ class Beatbot(discord.Client):
             else:
                 title = 'Request Failed'
 
-            return Beatbot.make_embed(title=title, description=description))
+            return Beatbot.make_embed(title=title, description=description)
 
     async def _easter_egg(self, message):
         """
