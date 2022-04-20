@@ -401,13 +401,13 @@ tree = app_commands.CommandTree(beatbot)
 beatbot.run(config.LOGIN_TOKEN)
 
 @tree.command()
-async def start(interaction: Discord.Interaction):
+async def start(interaction: discord.Interaction):
     await beatbot.start_stream(interaction.message)
 
 @tree.command()
-async def stop(interaction: Discord.Interaction):
+async def stop(interaction: discord.Interaction):
     await beatbot.stop_stream(interaction.message)
 
 @tree.command()
-async def status(interaction: Discord.Interaction):
+async def status(interaction: discord.Interaction):
     await beatbot.send_status(interaction.message)
