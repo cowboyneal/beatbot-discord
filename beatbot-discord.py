@@ -444,14 +444,14 @@ async def status(interaction: discord.Interaction):
     await interaction.response.send_message(embed=reply)
 
 @beatbot.tree.command(name='search')
-async def status(interaction: discord.Interaction, query: str):
+async def search(interaction: discord.Interaction, query: str):
     """Search for a song to play"""
 
     reply = await Beatbot.search_for_songs(query)
     await interaction.response.send_message(embed=reply)
 
 @beatbot.tree.command(name='queue')
-async def status(interaction: discord.Interaction, song_id: int):
+async def queue(interaction: discord.Interaction, song_id: int):
     """Queue the song with the given id number"""
 
     reply = await Beatbot.queue_request(song_id)
