@@ -280,10 +280,10 @@ class Beatbot(discord.Client):
             return
 
         query = ' '.join(args[2:])
-        reply = await self.search_for_songs(query)
+        reply = await Beatbot.search_for_songs(query)
         await message.channel.send(embed=reply)
 
-    async def search_for_songs(self, query):
+    async def search_for_songs(query):
         async with aiohttp.ClientSession() as session:
             response = await session.get('{}search/{}'.format(
                 config.SITE_URL, query))
@@ -332,10 +332,10 @@ class Beatbot(discord.Client):
         else:
             return
 
-        reply = await self.queue_request(song_id)
+        reply = await Beatbot.queue_request(song_id)
         await message.channel.send(embed=reply)
 
-    async def queue_request(self, song_id):
+    async def queue_request(song_id):
         async with aiohttp.ClientSession() as session:
             response = await session.get('{}queue_request/{}'.format(
                 config.SITE_URL, str(song_id)))
@@ -422,25 +422,39 @@ class Beatbot(discord.Client):
 discord.opus.load_opus('libopus.so')
 beatbot = Beatbot()
 
-@beatbot.tree.command(name="start")
+@beatbot.tree.command(name='start')
 async def start(interaction: discord.Interaction):
     """Join your voice channel and start playing music"""
 
     reply = await beatbot.start_stream(interaction.user)
     await interaction.response.send_message(reply)
 
-@beatbot.tree.command(name="stop")
+@beatbot.tree.command(name='stop')
 async def stop(interaction: discord.Interaction):
     """Stop playing music and leave your voice channel"""
 
     reply = await beatbot.stop_stream(interaction.user)
     await interaction.response.send_message(reply)
 
-@beatbot.tree.command(name="status")
+@beatbot.tree.command(name='status')
 async def status(interaction: discord.Interaction):
     """Show current playing song"""
 
     reply = await Beatbot.get_status_embed()
+    await interaction.response.send_message(embed=reply)
+
+@beatbot.tree.command(name='search')
+async def status(interaction: discord.Interaction, query: str):
+    """Search for a song to play"""
+
+    reply = await Beatbot.search_for_songs(query)
+    await interaction.response.send_message(embed=reply)
+
+@beatbot.tree.command(name='queue')
+async def status(interaction: discord.Interaction, song_id: int):
+    """Queue the song with the given id number"""
+
+    reply = await Beatbot.queue_request(song_id)
     await interaction.response.send_message(embed=reply)
 
 beatbot.run(config.LOGIN_TOKEN)
