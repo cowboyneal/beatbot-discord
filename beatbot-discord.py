@@ -106,8 +106,8 @@ class Beatbot(discord.Client):
         command = args[1].lower()
         route = {'start':       self._start_stream_onmsg,
                  'play':        self._start_stream_onmsg,
-                 'stop':        self.stop_stream,
-                 'end':         self.stop_stream,
+                 'stop':        self._stop_stream_onmsg,
+                 'end':         self._stop_stream_onmsg,
                  'status':      self._send_status,
                  'np':          self._send_status,
                  'now_playing': self._send_status,
@@ -180,7 +180,7 @@ class Beatbot(discord.Client):
             voice_channel.name, voice_channel.guild.name))
         return 'Stream started in {}.'.format(voice_channel.name)
 
-    async def stop_stream(self, message):
+    async def _stop_stream_onmsg(self, message):
         """
         Determine if a stream is playing and if so, stop it
 
@@ -189,16 +189,20 @@ class Beatbot(discord.Client):
                                        command
         """
 
-        if message.author.voice is None:
-            return
+        await self.stop_stream(message.author)
 
-        voice_channel = message.author.voice.channel
+    async def stop_stream(self, member):
+        if member.voice is None:
+            return 'You are not in a voice channel.'
+
+        voice_channel = member.voice.channel
 
         if (voice_channel is None or self.user not in voice_channel.members
                 or voice_channel.guild.id not in self.client_list):
-            return
+            return 'Bot is not in voice channel for this guild.'
 
         await self._close_voice_client(voice_channel)
+        return 'Stream stopped in {}.'.format(voice_channel.name)
 
     async def on_voice_state_update(self, member, before, after):
         """
@@ -424,7 +428,8 @@ async def start(interaction: discord.Interaction):
 async def stop(interaction: discord.Interaction):
     """Stop playing music and leave your voice channel"""
 
-    await beatbot.stop_stream(interaction.message)
+    reply = await beatbot.stop_stream(interaction.user)
+    await interaction.response.send_message(reply)
 
 @beatbot.tree.command(name="status")
 async def status(interaction: discord.Interaction):
