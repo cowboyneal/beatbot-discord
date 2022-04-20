@@ -402,12 +402,18 @@ beatbot.run(config.LOGIN_TOKEN)
 
 @tree.command()
 async def start(interaction: discord.Interaction):
+    """Join your voice channel and start playing music"""
+
     await beatbot.start_stream(interaction.message)
 
 @tree.command()
 async def stop(interaction: discord.Interaction):
+    """Stop playing music and leave your voice channel"""
+
     await beatbot.stop_stream(interaction.message)
 
 @tree.command()
 async def status(interaction: discord.Interaction):
+    """Show current playing song"""
+
     await beatbot.send_status(interaction.message)
