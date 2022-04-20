@@ -27,6 +27,7 @@ class Beatbot(discord.Client):
 
         discord.Client.__init__(self, intents=discord.Intents.default())
 
+    async def setup_hook(self):
         self.bg_task = self.loop.create_task(self._status_updater())
 
     async def on_ready(self):
