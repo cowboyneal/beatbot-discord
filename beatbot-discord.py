@@ -305,7 +305,7 @@ class Beatbot(discord.Client):
                 else:
                     title = 'Search Results'
 
-            return Beatbot.make_embed(title=title, description=description))
+            return Beatbot.make_embed(title=title, description=description)
 
     async def _queue_request_onmsg(self, message):
         """
