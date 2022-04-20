@@ -108,10 +108,10 @@ class Beatbot(discord.Client):
                  'play':        self.start_stream,
                  'stop':        self.stop_stream,
                  'end':         self.stop_stream,
-                 'status':      self.send_status,
-                 'np':          self.send_status,
-                 'now_playing': self.send_status,
-                 'nowplaying':  self.send_status,
+                 'status':      self._send_status,
+                 'np':          self._send_status,
+                 'now_playing': self._send_status,
+                 'nowplaying':  self._send_status,
                  'search':      self._search_for_songs,
                  'find':        self._search_for_songs,
                  'queue':       self._queue_request,
@@ -238,7 +238,16 @@ class Beatbot(discord.Client):
         Beatbot.log_to_file('Stream stopped on {} on {}.'.format(
             channel.name, channel.guild.name))
 
-    async def send_status(self, message):
+    async def get_status_embed():
+        current_song = await Beatbot.get_current_song()
+        reply = Beatbot.make_embed(title=current_song['title'],
+                                   description="{}\n***{}***".format(
+                                        current_song['artist'],
+                                        current_song['album']))
+        reply.set_thumbnail(url=config.IMAGE_URL + str(current_song['id']))
+        return reply
+
+    async def _send_status(self, message):
         """
         Show the currently playing song
 
@@ -246,13 +255,7 @@ class Beatbot(discord.Client):
             message (Discord.Message): The request for current status
         """
 
-        current_song = await Beatbot.get_current_song()
-        reply = Beatbot.make_embed(title=current_song['title'],
-                                   description="{}\n***{}***".format(
-                                        current_song['artist'],
-                                        current_song['album']))
-        reply.set_thumbnail(url=config.IMAGE_URL + str(current_song['id']))
-        await message.channel.send(embed=reply)
+        await message.channel.send(embed=Beatbot.get_status_embed())
 
     async def _search_for_songs(self, message):
         """
@@ -421,6 +424,6 @@ async def stop(interaction: discord.Interaction):
 async def status(interaction: discord.Interaction):
     """Show current playing song"""
 
-    await beatbot.send_status(interaction.message)
+    await interaction.response.send_message(embed=Beatbot.get_status_embed())
 
 beatbot.run(config.LOGIN_TOKEN)
