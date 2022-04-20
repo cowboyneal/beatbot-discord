@@ -255,7 +255,8 @@ class Beatbot(discord.Client):
             message (Discord.Message): The request for current status
         """
 
-        await message.channel.send(embed=Beatbot.get_status_embed())
+        reply = await Beatbot.get_status_embed()
+        await message.channel.send(embed=reply)
 
     async def _search_for_songs(self, message):
         """
@@ -424,6 +425,7 @@ async def stop(interaction: discord.Interaction):
 async def status(interaction: discord.Interaction):
     """Show current playing song"""
 
-    await interaction.response.send_message(embed=Beatbot.get_status_embed())
+    reply = await Beatbot.get_status_embed()
+    await interaction.response.send_message(embed=reply)
 
 beatbot.run(config.LOGIN_TOKEN)
