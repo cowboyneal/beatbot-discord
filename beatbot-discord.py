@@ -125,7 +125,7 @@ class Beatbot(discord.Client):
             await route[command](message)
 
     async def _sync_tree(self, message):
-        if (str(message.author) == 'CowboyNeal#0541'):
+        if (str(message.author) == config.ADMIN_NAME):
             await self.tree.sync()
             Beatbot.log_to_file('Application commands synced')
 
@@ -175,6 +175,7 @@ class Beatbot(discord.Client):
         self.client_list[voice_channel.guild.id] = voice_client
         Beatbot.log_to_file('Stream started in {} on {}.'.format(
             voice_channel.name, voice_channel.guild.name))
+        return 'Stream started in {}.'.format(voice_channel.name)
 
     async def stop_stream(self, message):
         """
@@ -413,7 +414,8 @@ beatbot = Beatbot()
 async def start(interaction: discord.Interaction):
     """Join your voice channel and start playing music"""
 
-    await beatbot.start_stream(interaction.message)
+    reply = await beatbot.start_stream(interaction.message)
+    await interaction.response.send_message(reply)
 
 @beatbot.tree.command(name="stop")
 async def stop(interaction: discord.Interaction):
