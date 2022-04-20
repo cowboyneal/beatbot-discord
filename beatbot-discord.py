@@ -392,5 +392,5 @@ class Beatbot(discord.Client):
         logging.info(str(message))
 
 discord.opus.load_opus('libopus.so')
-beatbot = Beatbot()
+beatbot = Beatbot(intents=discord.Intents.default())
 beatbot.run(config.LOGIN_TOKEN)
