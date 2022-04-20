@@ -108,12 +108,12 @@ class Beatbot(discord.Client):
                  'play':        self._start_stream_onmsg,
                  'stop':        self._stop_stream_onmsg,
                  'end':         self._stop_stream_onmsg,
-                 'status':      self._send_status,
-                 'np':          self._send_status,
-                 'now_playing': self._send_status,
-                 'nowplaying':  self._send_status,
-                 'search':      self._search_for_songs,
-                 'find':        self._search_for_songs,
+                 'status':      self._send_status_onmsg,
+                 'np':          self._send_status_onmsg,
+                 'now_playing': self._send_status_onmsg,
+                 'nowplaying':  self._send_status_onmsg,
+                 'search':      self._search_for_songs_onmsg,
+                 'find':        self._search_for_songs_onmsg,
                  'queue':       self._queue_request,
                  'request':     self._queue_request,
                  'help':        self._show_help,
@@ -255,7 +255,7 @@ class Beatbot(discord.Client):
         reply.set_thumbnail(url=config.IMAGE_URL + str(current_song['id']))
         return reply
 
-    async def _send_status(self, message):
+    async def _send_status_onmsg(self, message):
         """
         Show the currently playing song
 
@@ -266,7 +266,7 @@ class Beatbot(discord.Client):
         reply = await Beatbot.get_status_embed()
         await message.channel.send(embed=reply)
 
-    async def _search_for_songs(self, message):
+    async def _search_for_songs_onmsg(self, message):
         """
         Search for songs to potentially queue
 
@@ -280,7 +280,10 @@ class Beatbot(discord.Client):
             return
 
         query = ' '.join(args[2:])
+        reply = await self._search_for_songs(query)
+        await message.channel.send(embed=reply)
 
+    async def search_for_songs(self, query):
         async with aiohttp.ClientSession() as session:
             response = await session.get('{}search/{}'.format(
                 config.SITE_URL, query))
@@ -302,8 +305,7 @@ class Beatbot(discord.Client):
                 else:
                     title = 'Search Results'
 
-            await message.channel.send(embed=Beatbot.make_embed(title=title,
-                                       description=description))
+            return Beatbot.make_embed(title=title, description=description))
 
     async def _queue_request(self, message):
         """
