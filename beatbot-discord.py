@@ -151,7 +151,7 @@ class Beatbot(discord.Client):
         await message.channel.send(embed=Beatbot.make_embed(title='Usage:',
                                                             description=usage))
 
-    async def start_stream(self, message):
+    async def _start_stream_onmsg(self, message):
         """
         Determine if the stream can be started and then do so if able
 
@@ -160,14 +160,17 @@ class Beatbot(discord.Client):
                                        command
         """
 
-        if message.author.voice is None:
-            return
+        await self.start_stream(message.author)
 
-        voice_channel = message.author.voice.channel
+    async def start_stream(self, member):
+        if member.voice is None:
+            return 'Could not find voice channel.'
+
+        voice_channel = member.voice.channel
 
         if (voice_channel is None or self.user in voice_channel.members or
                 voice_channel.guild.id in self.client_list):
-            return
+            return 'Could not join voice channel.'
 
         voice_client = await voice_channel.connect()
         voice_client.play(discord.FFmpegPCMAudio(config.STREAM_URL,
@@ -414,7 +417,7 @@ beatbot = Beatbot()
 async def start(interaction: discord.Interaction):
     """Join your voice channel and start playing music"""
 
-    reply = await beatbot.start_stream(interaction.message)
+    reply = await beatbot.start_stream(interaction.user)
     await interaction.response.send_message(reply)
 
 @beatbot.tree.command(name="stop")
