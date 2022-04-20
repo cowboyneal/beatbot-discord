@@ -104,8 +104,8 @@ class Beatbot(discord.Client):
             return
 
         command = args[1].lower()
-        route = {'start':       self.start_stream,
-                 'play':        self.start_stream,
+        route = {'start':       self._start_stream_onmsg,
+                 'play':        self._start_stream_onmsg,
                  'stop':        self.stop_stream,
                  'end':         self.stop_stream,
                  'status':      self._send_status,
