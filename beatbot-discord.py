@@ -25,7 +25,9 @@ class Beatbot(discord.Client):
                             level=logging.INFO,
                             format='%(asctime)s - %(message)s')
 
-        discord.Client.__init__(self, intents=discord.Intents.default())
+        intents = discord.Intents.default()
+        intents.message_content = True
+        discord.Client.__init__(self, intents=intents)
 
     async def setup_hook(self):
         self.bg_task = self.loop.create_task(self._status_updater())
