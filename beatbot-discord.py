@@ -29,6 +29,25 @@ class Beatbot(discord.Client):
         intents = discord.Intents.default()
         intents.message_content = True
         discord.Client.__init__(self, intents=intents)
+        tree = app_commands.CommandTree(self)
+
+    @tree.command(name="start")
+    async def start(interaction: discord.Interaction):
+        """Join your voice channel and start playing music"""
+
+        await self.start_stream(interaction.message)
+
+    @tree.command(name="stop")
+    async def stop(interaction: discord.Interaction):
+        """Stop playing music and leave your voice channel"""
+
+        await self.stop_stream(interaction.message)
+
+    @tree.command(name="status")
+    async def status(interaction: discord.Interaction):
+        """Show current playing song"""
+
+        await self.send_status(interaction.message)
 
     async def setup_hook(self):
         self.bg_task = self.loop.create_task(self._status_updater())
@@ -103,24 +122,30 @@ class Beatbot(discord.Client):
             return
 
         command = args[1].lower()
-        route = {'start': self.start_stream,
-                 'play': self.start_stream,
-                 'stop': self.stop_stream,
-                 'end': self.stop_stream,
-                 'status': self.send_status,
-                 'np': self.send_status,
+        route = {'start':       self.start_stream,
+                 'play':        self.start_stream,
+                 'stop':        self.stop_stream,
+                 'end':         self.stop_stream,
+                 'status':      self.send_status,
+                 'np':          self.send_status,
                  'now_playing': self.send_status,
-                 'nowplaying': self.send_status,
-                 'search': self._search_for_songs,
-                 'find': self._search_for_songs,
-                 'queue': self._queue_request,
-                 'request': self._queue_request,
-                 'help': self._show_help,
-                 'king': self._easter_egg,
-                 'gun': self._easter_egg}
+                 'nowplaying':  self.send_status,
+                 'search':      self._search_for_songs,
+                 'find':        self._search_for_songs,
+                 'queue':       self._queue_request,
+                 'request':     self._queue_request,
+                 'help':        self._show_help,
+                 'sync_tree':   self._sync_tree,
+                 'king':        self._easter_egg,
+                 'gun':         self._easter_egg}
 
         if command in route:
             await route[command](message)
+
+    async def _sync_tree(self, message):
+        if (str(message.author) == 'CowboyNeal#0541'):
+            await tree.sync()
+            Beatbot.log_to_file('Application commands synced')
 
     async def _show_help(self, message):
         """
@@ -397,25 +422,5 @@ class Beatbot(discord.Client):
 
 discord.opus.load_opus('libopus.so')
 beatbot = Beatbot()
-tree = app_commands.CommandTree(beatbot)
 
-@tree.command()
-async def start(interaction: discord.Interaction):
-    """Join your voice channel and start playing music"""
-
-    await beatbot.start_stream(interaction.message)
-
-@tree.command()
-async def stop(interaction: discord.Interaction):
-    """Stop playing music and leave your voice channel"""
-
-    await beatbot.stop_stream(interaction.message)
-
-@tree.command()
-async def status(interaction: discord.Interaction):
-    """Show current playing song"""
-
-    await beatbot.send_status(interaction.message)
-
-tree.sync()
 beatbot.run(config.LOGIN_TOKEN)
