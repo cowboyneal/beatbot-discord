@@ -102,14 +102,14 @@ class Beatbot(discord.Client):
             return
 
         command = args[1].lower()
-        route = {'start': self._start_stream,
-                 'play': self._start_stream,
-                 'stop': self._stop_stream,
-                 'end': self._stop_stream,
-                 'status': self._send_status,
-                 'np': self._send_status,
-                 'now_playing': self._send_status,
-                 'nowplaying': self._send_status,
+        route = {'start': self.start_stream,
+                 'play': self.start_stream,
+                 'stop': self.stop_stream,
+                 'end': self.stop_stream,
+                 'status': self.send_status,
+                 'np': self.send_status,
+                 'now_playing': self.send_status,
+                 'nowplaying': self.send_status,
                  'search': self._search_for_songs,
                  'find': self._search_for_songs,
                  'queue': self._queue_request,
@@ -143,7 +143,7 @@ class Beatbot(discord.Client):
         await message.channel.send(embed=Beatbot.make_embed(title='Usage:',
                                                             description=usage))
 
-    async def _start_stream(self, message):
+    async def start_stream(self, message):
         """
         Determine if the stream can be started and then do so if able
 
@@ -168,7 +168,7 @@ class Beatbot(discord.Client):
         Beatbot.log_to_file('Stream started in {} on {}.'.format(
             voice_channel.name, voice_channel.guild.name))
 
-    async def _stop_stream(self, message):
+    async def stop_stream(self, message):
         """
         Determine if a stream is playing and if so, stop it
 
@@ -230,7 +230,7 @@ class Beatbot(discord.Client):
         Beatbot.log_to_file('Stream stopped on {} on {}.'.format(
             channel.name, channel.guild.name))
 
-    async def _send_status(self, message):
+    async def send_status(self, message):
         """
         Show the currently playing song
 
@@ -396,4 +396,17 @@ class Beatbot(discord.Client):
 
 discord.opus.load_opus('libopus.so')
 beatbot = Beatbot()
+tree = app_commands.CommandTree(beatbot)
 beatbot.run(config.LOGIN_TOKEN)
+
+@tree.command()
+async def start(interaction: Discord.Interaction):
+    await beatbot.start_stream(interaction.message)
+
+@tree.command()
+async def stop(interaction: Discord.Interaction):
+    await beatbot.stop_stream(interaction.message)
+
+@tree.command()
+async def status(interaction: Discord.Interaction):
+    await beatbot.send_status(interaction.message)
