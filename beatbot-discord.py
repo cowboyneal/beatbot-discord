@@ -417,5 +417,5 @@ async def status(interaction: discord.Interaction):
 
     await beatbot.send_status(interaction.message)
 
-await tree.sync()
+tree.sync()
 beatbot.run(config.LOGIN_TOKEN)
