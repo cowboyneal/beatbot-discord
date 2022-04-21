@@ -144,9 +144,9 @@ class Beatbot(discord.Client):
                         "channel\n"
                  '**status** | **now_playing** | **nowplaying** | **np**: '
                         "Show current playing song\n"
-                 '**search** | **find** <**query**>: Search for a song to '
+                 '(**search** | **find**) <**query**>: Search for a song to '
                         "request\n"
-                 '**queue** | **request** <**id**>: Queue a song')
+                 '(**queue** | **request**) <**id**>: Queue a song')
 
         await message.channel.send(embed=Beatbot.make_embed(title='Usage:',
                                                             description=usage))
