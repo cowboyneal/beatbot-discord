@@ -128,6 +128,7 @@ class Beatbot(discord.Client):
         if (str(message.author) == config.ADMIN_NAME):
             await self.tree.sync()
             Beatbot.log_to_file('Application commands synced')
+            await message.channel.send('Application commands have been synced.')
 
     async def _show_help(self, message):
         """
