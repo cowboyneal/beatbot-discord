@@ -365,7 +365,8 @@ class Beatbot(discord.Client):
 
         urls = {'king': 'https://www.youtube.com/watch?v=9P-DFZ3HOPQ',
                 'gun': 'https://www.youtube.com/watch?v=-LgEvQuyDxE',
-                'queue': 'https://www.youtube.com/watch?v=WPkMUU9tUqk'}
+                'queue': 'https://www.youtube.com/watch?v=WPkMUU9tUqk',
+                'ldrizzy': 'https://www.youtube.com/watch?v=AF2MqFnPotc' }
 
         if egg in urls:
             await message.channel.send(urls[egg])
