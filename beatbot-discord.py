@@ -119,7 +119,8 @@ class Beatbot(discord.Client):
                  'help':        self._show_help,
                  'sync_tree':   self._sync_tree,
                  'king':        self._easter_egg,
-                 'gun':         self._easter_egg}
+                 'gun':         self._easter_egg,
+                 'ldrizzy':     self._easter_egg}
 
         if command in route:
             await route[command](message)
@@ -366,7 +367,7 @@ class Beatbot(discord.Client):
         urls = {'king': 'https://www.youtube.com/watch?v=9P-DFZ3HOPQ',
                 'gun': 'https://www.youtube.com/watch?v=-LgEvQuyDxE',
                 'queue': 'https://www.youtube.com/watch?v=WPkMUU9tUqk',
-                'ldrizzy': 'https://www.youtube.com/watch?v=AF2MqFnPotc' }
+                'ldrizzy': 'https://www.youtube.com/watch?v=AF2MqFnPotc'}
 
         if egg in urls:
             await message.channel.send(urls[egg])
