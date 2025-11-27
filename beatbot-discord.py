@@ -69,7 +69,7 @@ class Beatbot(discord.Client):
 
                         if np_str != old_np_str:
                             await self.change_presence(
-                                    activity=discord.Game(np_str))
+                              activity=discord.Game('Playing {}'.format(np_str)))
                             old_np_str = np_str
                     except:
                         error = sys.exc_info()
