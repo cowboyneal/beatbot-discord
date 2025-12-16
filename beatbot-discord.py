@@ -69,10 +69,13 @@ class Beatbot(discord.Client):
 
                         if np_str != old_np_str:
                             await self.change_presence(
-                              activity=discord.Activity(
+                                activity=discord.Activity(
                                     name='{}'.format(np_str),
-                                    type=discord.ActivityType.listening)
-                              )
+                                    type=discord.ActivityType.listening,
+                                    small_image_url=config.IMAGE_URL +
+                                            str(current_song['id'])
+                                )
+                            )
                             old_np_str = np_str
                     except:
                         error = sys.exc_info()
